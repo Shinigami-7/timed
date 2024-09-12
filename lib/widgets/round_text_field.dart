@@ -6,7 +6,7 @@ class RoundTextField extends StatelessWidget {
   final FormFieldValidator? validator;
   final ValueChanged<String>? onChanged;
   final String hintText;
-  final String icon;
+  final IconData icon;  
   final TextInputType textInputType;
   final bool isObsecureText;
   final Widget? rightIcon;
@@ -19,7 +19,7 @@ class RoundTextField extends StatelessWidget {
       required this.hintText,
       required this.icon,
       required this.textInputType,
-      required this.isObsecureText,
+      this.isObsecureText = false,
       this.rightIcon});
 
   @override
@@ -43,11 +43,9 @@ class RoundTextField extends StatelessWidget {
             alignment: Alignment.center,
             width: 20,
             height: 20,
-            child: Image.asset(
+            child: Icon(
               icon,
-              height: 20,
-              width: 20,
-              fit: BoxFit.contain,
+              size: 20,
               color: AppColors.grayColor,
             ),
           ),
