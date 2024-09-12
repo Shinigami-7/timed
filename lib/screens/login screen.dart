@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timed/screens/home%20screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
@@ -16,25 +17,25 @@ class _LoignScreenState extends State<LoignScreen> {
   bool _isObscure = true;
   final _formKey = GlobalKey<FormState>();
 
-  Future<User?> _signIn(
-    BuildContext context, String email, String password) async{
-      try{
-        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password
-        );
-        User? user = userCredential.user;
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen(),
-        ));
-        return user;
-      }catch(e){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Login Failed, Please check your email and password")
-        ),
-        );
-        return null;
-      }
-    }
+  // Future<User?> _signIn(
+  //   BuildContext context, String email, String password) async{
+  //     try{
+  //       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+  //         email: email, password: password
+  //       );
+  //       User? user = userCredential.user;
+  //       Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen(),
+  //       ));
+  //       return user;
+  //     }catch(e){
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text("Login Failed, Please check your email and password")
+  //       ),
+  //       );
+  //       return null;
+  //     }
+  //   }
   
   @override
   void initState(){
@@ -145,12 +146,113 @@ class _LoignScreenState extends State<LoignScreen> {
                   SizedBox(
                     height: media.width*0.1,
                   ),
-                  RoundGradientButton(title: "Login", 
-                  onPressed: (){
-                    if(_formKey.currentState!.validate()){
-                      _sigIn(context,_emailController.text, _passController.text);
-                    }
-                  })
+
+                  //temporary
+                  ElevatedButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Homescreen()));
+                  }, child: Text("Loign")),
+
+
+                  // RoundGradientButton(title: "Login", 
+                  // onPressed: (){
+                  //   if(_formKey.currentState!.validate()){
+                  //     _signIn(context,_emailController.text, _passController.text);
+                  //   }
+                  // }),
+                  SizedBox(
+                    height: media.width*0.1,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: Container(
+                        width: double.maxFinite,
+                        height: 1,
+                        color: AppColors.grayColor.withOpacity(0.5),
+                      )),
+                      Text(" Or ",
+                      style: TextStyle(
+                        color: AppColors.grayColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400
+                      ),
+                      ),
+                      Expanded(child: Container(
+                        width: double.maxFinite,
+                        height: 1,
+                        color: AppColors.grayColor.withOpacity(0.5),
+                      )),
+                    ],
+                  ),
+                  SizedBox(
+                    width: media.width*0.05,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.primaryColor1.withOpacity(0.5),
+                              width: 1,
+                            )
+                          ),
+                          child: Image.asset("assets/icons/google.png",
+                          height: 20, width: 20,),
+                        ),
+                      ),
+                    SizedBox(
+                    width: 30,
+                  ),
+                  GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.primaryColor1.withOpacity(0.5),
+                              width: 1,
+                            )
+                          ),
+                          child: Image.asset("assets/icons/facebook.png",
+                          height: 20, width: 20,),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: media.width*0.05,
+                  ),
+                  TextButton(onPressed: (){}, 
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: AppColors.blackColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      children: [
+                        TextSpan(text: "Don't have an account?"),
+                        TextSpan(
+                          text: "Register",
+                          style: TextStyle(
+                            color: AppColors.secondaryColor1,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500
+                          )
+                        )
+                      ]
+                    ),
+                  ))
 
                 ],
               ),
