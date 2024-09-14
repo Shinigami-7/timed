@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:timed/screens/home%20screen.dart';
-import 'package:timed/screens/signup_screen.dart';
+import 'package:timed/screens/login%20screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
 
-class LoignScreen extends StatefulWidget {
-  const LoignScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoignScreen> createState() => _LoignScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoignScreenState extends State<LoignScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
-  bool _isObscure = true;
+  final TextEditingController _confirmPassController = TextEditingController();
+  bool _isObscurepass= true;
+  bool _isObscureconfirm= true;
+  bool _isCheck = false;
   final _formKey = GlobalKey<FormState>();
 
   // Future<User?> _signIn(
@@ -37,6 +41,35 @@ class _LoignScreenState extends State<LoignScreen> {
   //       return null;
   //     }
   //   }
+  @override
+  void dispose() {
+    _fullnameController.dispose();
+    _emailController.dispose();
+    _passController.dispose();
+    _confirmPassController.dispose();
+    super.dispose();
+  }
+  bool validateEmail(String email) {
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    return emailRegex.hasMatch(email);
+  }
+
+   String errorText = '';
+
+  void signUp() {
+    if (_formKey.currentState!.validate() && _isCheck) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoignScreen()),
+      );
+    } else {
+      if (!_isCheck) {
+        setState(() {
+          errorText = 'Please accept the Terms and Conditions';
+        });
+      }
+    }
+  }
   
   @override
   void initState(){
@@ -67,7 +100,7 @@ class _LoignScreenState extends State<LoignScreen> {
                         SizedBox(
                           height: media.height*0.03,
                         ),
-                        Text("Hey there",
+                        Text("Yo",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.blackColor,
@@ -78,7 +111,7 @@ class _LoignScreenState extends State<LoignScreen> {
                         SizedBox(
                           height: media.height*0.03,
                         ),
-                        Text("Welcome Back",
+                        Text("Create an Account",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.blackColor,
@@ -91,24 +124,39 @@ class _LoignScreenState extends State<LoignScreen> {
                   ),
                   SizedBox(height: media.width*0.02,),
                   RoundTextField(
+                    textEditingController: _fullnameController,
+                    hintText: "Full Name", 
+                    icon: Icons.person, 
+                    textInputType: TextInputType.name,
+                    validator: (value){
+                      if (value ==null || value.isEmpty){
+                        return "Please enter your Full Name";
+                      }
+                      return null;
+                    },
+                  ),
+                 
+                  SizedBox(height: media.width*0.02,),
+                  RoundTextField(
                     textEditingController: _emailController,
                     hintText: "Email", 
                     icon: Icons.email, 
                     textInputType: TextInputType.emailAddress,
                     validator: (value){
                       if (value ==null || value.isEmpty){
-                        return "Please enter your emali";
+                        return "Please enter your Email";
+                      }else if (!validateEmail(value)) {
+                        return "Invalid email address!";
                       }
-                      return null;
                     },
                   ),
-                                    SizedBox(height: media.width*0.02,),
+                  SizedBox(height: media.width*0.02,),
                   RoundTextField(
                     textEditingController: _passController,
                     hintText: "Password", 
                     icon: Icons.lock, 
                     textInputType: TextInputType.text,
-                    isObsecureText: _isObscure,
+                    isObsecureText: _isObscurepass,
                     validator: (value){
                       if (value ==null || value.isEmpty){
                         return "Please enter your Password";
@@ -121,43 +169,89 @@ class _LoignScreenState extends State<LoignScreen> {
                     rightIcon: TextButton(
                       onPressed: (){
                         setState(() {
-                          _isObscure = !_isObscure;
+                          _isObscurepass = !_isObscurepass;
                         });
                       },
                       child: Container(
                         alignment: Alignment.center,
                         height: 20,
                         width: 20,
-                        child: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
+                        child: Icon(_isObscurepass? Icons.visibility : Icons.visibility_off),
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: (){},
-                      child: Text("Forgot your password?",
-                      style: TextStyle(
-                        color: AppColors.primaryColor1,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),),
+                  SizedBox(height: media.width*0.02,),
+                  RoundTextField(
+                    textEditingController: _confirmPassController,
+                    hintText: "Confirm Password", 
+                    icon: Icons.lock, 
+                    textInputType: TextInputType.text,
+                    isObsecureText: _isObscureconfirm,
+                    validator: (value){
+                      if (value ==null || value.isEmpty){
+                        return "Please enter your Password";
+                      }
+                      else if(value!=_passController.text){
+                        return "Password doesn't match";
+                      }
+                      else if(value.length < 6){
+                        return "Password must be atleast 6 character long";
+                      }
+                      return null;
+                    },
+                    rightIcon: TextButton(
+                      onPressed: (){
+                        setState(() {
+                          _isObscureconfirm = !_isObscureconfirm;
+                        });
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 20,
+                        width: 20,
+                        child: Icon(_isObscureconfirm ? Icons.visibility : Icons.visibility_off),
+                      ),
                     ),
                   ),
+                  SizedBox(height:media.width*0.02),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(onPressed: (){
+                        setState(() {
+                          _isCheck = !_isCheck;
+                        });
+                      }, 
+                      icon: Icon(_isCheck ? Icons.check_box_outlined : Icons.check_box_outline_blank)
+                      ),
+                      Expanded(
+                        child: Text("By continuing you accept our Privacy and Policy and term of use"),
+                      ),
+                      
+                    ],
+                  ),
+                 
                   SizedBox(
                     height: media.width*0.1,
                   ),
 
                   //temporary
-                  ElevatedButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Homescreen()));
-                  }, child: Text("Loign")),
+                  ElevatedButton(onPressed:signUp
+                  , child: Text("Create Account")),
 
 
-                  // RoundGradientButton(title: "Login", 
+                  // RoundGradientButton(title: "Create Account", 
                   // onPressed: (){
                   //   if(_formKey.currentState!.validate()){
-                  //     _signIn(context,_emailController.text, _passController.text);
+                  // if(_isCheck){
+                  //   try{
+                  //     UserCredential userCredential = _auth.createUserWithEmailAndPassword(
+                  //       email: _emailController.text,
+                  //       password: _passController.text,
+                  //       confirmPassword: _confirmPassController.text,
+                  //     );
+                  //   }catch(e){}
+                  // }
                   //   }
                   // }),
                   SizedBox(
@@ -166,7 +260,7 @@ class _LoignScreenState extends State<LoignScreen> {
                   Row(
                     children: [
                       Expanded(child: Container(
-                        width: double.maxFinite,
+                        width: double.infinity,
                         height: 1,
                         color: AppColors.grayColor.withOpacity(0.5),
                       )),
@@ -232,30 +326,7 @@ class _LoignScreenState extends State<LoignScreen> {
                   SizedBox(
                     height: media.width*0.05,
                   ),
-                  TextButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SignupScreen()));
-                  }, 
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: TextStyle(
-                        color: AppColors.blackColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      children: [
-                        TextSpan(text: "Don't have an account?"),
-                        TextSpan(
-                          text: "Register",
-                          style: TextStyle(
-                            color: AppColors.secondaryColor1,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500
-                          )
-                        )
-                      ]
-                    ),
-                  ))
+                  
 
                 ],
               ),
