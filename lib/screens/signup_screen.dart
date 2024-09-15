@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:timed/screens/home%20screen.dart';
-import 'package:timed/screens/login%20screen.dart';
+import 'package:timed/screens/login_screen.dart';
 import 'package:timed/utils/app_colors.dart';
-import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -60,7 +58,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState!.validate() && _isCheck) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => LoignScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } else {
       if (!_isCheck) {
@@ -85,7 +83,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(vertical:15, horizontal: 25),
+            padding: const EdgeInsets.symmetric(vertical:15, horizontal: 25),
             child: Form(
               key: _formKey,
               child: Column(
@@ -97,21 +95,11 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+   
                         SizedBox(
                           height: media.height*0.03,
                         ),
-                        Text("Yo",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.blackColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400
-                        ),
-                        ),
-                        SizedBox(
-                          height: media.height*0.03,
-                        ),
-                        Text("Create an Account",
+                        const Text("Create an Account",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.blackColor,
@@ -148,6 +136,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       }else if (!validateEmail(value)) {
                         return "Invalid email address!";
                       }
+                      return null;
                     },
                   ),
                   SizedBox(height: media.width*0.02,),
@@ -224,7 +213,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       }, 
                       icon: Icon(_isCheck ? Icons.check_box_outlined : Icons.check_box_outline_blank)
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Text("By continuing you accept our Privacy and Policy and term of use"),
                       ),
                       
@@ -237,7 +226,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   //temporary
                   ElevatedButton(onPressed:signUp
-                  , child: Text("Create Account")),
+                  , child: const Text("Create Account")),
 
 
                   // RoundGradientButton(title: "Create Account", 
@@ -264,7 +253,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: 1,
                         color: AppColors.grayColor.withOpacity(0.5),
                       )),
-                      Text(" Or ",
+                      const Text(" Or ",
                       style: TextStyle(
                         color: AppColors.grayColor,
                         fontSize: 12,
@@ -301,7 +290,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           height: 20, width: 20,),
                         ),
                       ),
-                    SizedBox(
+                    const SizedBox(
                     width: 30,
                   ),
                   GestureDetector(
@@ -326,6 +315,30 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(
                     height: media.width*0.05,
                   ),
+                  TextButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
+                  }, 
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: const TextSpan(
+                      style: TextStyle(
+                        color: AppColors.blackColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      children: [
+                        TextSpan(text: "Already have an account?"),
+                        TextSpan(
+                          text: "Login",
+                          style: TextStyle(
+                            color: AppColors.secondaryColor1,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500
+                          )
+                        )
+                      ]
+                    ),
+                  ))
                   
 
                 ],
