@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "731138489751",
+    "project_id": "timed-3b4ac",
+    "storage_bucket": "timed-3b4ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731138489751:android:acd22853cf7f73ff1498d2",
+        "android_client_info": {
+          "package_name": "com.timed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ0pGf7SmThSESxMpws8rOh9rRAZ5HQNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

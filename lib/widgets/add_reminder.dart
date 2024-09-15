@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timed/model/reminder_model.dart';
@@ -39,12 +40,12 @@ addReminder(BuildContext context, String uid) {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
             ),
-            title: Text("Add Reminder"),
+            title: const Text("Add Reminder"),
             content: SingleChildScrollView(
               child: Column(
                 children: [
-                  Text("Select a Time for Reminder"),
-                  SizedBox(height: 20),
+                  const Text("Select a Time for Reminder"),
+                  const SizedBox(height: 20),
                   MaterialButton(
                     onPressed: () async {
                       TimeOfDay? newTime = await showTimePicker(
@@ -58,15 +59,15 @@ addReminder(BuildContext context, String uid) {
                     },
                     child: Row(
                       children: [
-                        FaIcon(
+                        const FaIcon(
                           FontAwesomeIcons.clock,
                           color: AppColors.primaryColor1,
                           size: 40,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           time.format(context), // Corrected format call
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.primaryColor1,
                             fontSize: 30,
                           ),
@@ -82,14 +83,14 @@ addReminder(BuildContext context, String uid) {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
                   add(uid, time);
                   Navigator.pop(context);
                 },
-                child: Text('ADD'),
+                child: const Text('ADD'),
               ),
             ],
           );

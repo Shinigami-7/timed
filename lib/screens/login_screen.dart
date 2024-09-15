@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:timed/screens/home_screen.dart';
 import 'package:timed/screens/signup_screen.dart';
@@ -5,38 +6,40 @@ import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
 
-class LoignScreen extends StatefulWidget {
-  const LoignScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoignScreen> createState() => _LoignScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoignScreenState extends State<LoignScreen> {
+class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   bool _isObscure = true;
   final _formKey = GlobalKey<FormState>();
 
-  // Future<User?> _signIn(
-  //   BuildContext context, String email, String password) async{
-  //     try{
-  //       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-  //         email: email, password: password
-  //       );
-  //       User? user = userCredential.user;
-  //       Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen(),
-  //       ));
-  //       return user;
-  //     }catch(e){
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text("Login Failed, Please check your email and password")
-  //       ),
-  //       );
-  //       return null;
-  //     }
-  //   }
+  Future<User?> _signIn(
+    BuildContext context, String email, String password) async{
+      try{
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password
+        );
+        User? user = userCredential.user;
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> const Homescreen(),
+        ));
+        return user;
+      }catch(e){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login Failed, Please check your email and password")
+        ),
+        );
+        return null;
+      }
+    }
   
   @override
   void initState(){
@@ -52,7 +55,7 @@ class _LoignScreenState extends State<LoignScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(vertical:15, horizontal: 25),
+            padding: const EdgeInsets.symmetric(vertical:15, horizontal: 25),
             child: Form(
               key: _formKey,
               child: Column(
@@ -67,7 +70,7 @@ class _LoignScreenState extends State<LoignScreen> {
                         SizedBox(
                           height: media.height*0.02,
                         ),
-                        Text("Hey there",
+                        const Text("Hey there",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.blackColor,
@@ -78,7 +81,7 @@ class _LoignScreenState extends State<LoignScreen> {
                         SizedBox(
                           height: media.height*0.03,
                         ),
-                        Text("Welcome Back",
+                        const Text("Welcome Back",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.blackColor,
@@ -136,7 +139,7 @@ class _LoignScreenState extends State<LoignScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: (){},
-                      child: Text("Forgot your password?",
+                      child: const Text("Forgot your password?",
                       style: TextStyle(
                         color: AppColors.primaryColor1,
                         fontSize: 14,
@@ -149,17 +152,17 @@ class _LoignScreenState extends State<LoignScreen> {
                   ),
 
                   //temporary
-                  ElevatedButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Homescreen()));
-                  }, child: Text("Loign")),
+                  // ElevatedButton(onPressed: (){
+                  //   Navigator.push(context, MaterialPageRoute(builder: (context)=>const Homescreen()));
+                  // }, child: const Text("Loign")),
 
 
-                  // RoundGradientButton(title: "Login", 
-                  // onPressed: (){
-                  //   if(_formKey.currentState!.validate()){
-                  //     _signIn(context,_emailController.text, _passController.text);
-                  //   }
-                  // }),
+                  RoundGradientButton(title: "Login", 
+                  onPressed: (){
+                    if(_formKey.currentState!.validate()){
+                      _signIn(context,_emailController.text, _passController.text);
+                    }
+                  }),
                   SizedBox(
                     height: media.width*0.1,
                   ),
@@ -170,7 +173,7 @@ class _LoignScreenState extends State<LoignScreen> {
                         height: 1,
                         color: AppColors.grayColor.withOpacity(0.5),
                       )),
-                      Text(" Or ",
+                      const Text(" Or ",
                       style: TextStyle(
                         color: AppColors.grayColor,
                         fontSize: 12,
@@ -207,7 +210,7 @@ class _LoignScreenState extends State<LoignScreen> {
                           height: 20, width: 20,),
                         ),
                       ),
-                    SizedBox(
+                    const SizedBox(
                     width: 30,
                   ),
                   GestureDetector(
@@ -233,11 +236,11 @@ class _LoignScreenState extends State<LoignScreen> {
                     height: media.width*0.05,
                   ),
                   TextButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SignupScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const SignupScreen()));
                   }, 
                   child: RichText(
                     textAlign: TextAlign.center,
-                    text: TextSpan(
+                    text: const TextSpan(
                       style: TextStyle(
                         color: AppColors.blackColor,
                         fontSize: 14,

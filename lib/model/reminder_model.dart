@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ReminderModel {
   Timestamp? timeStamp;
   bool? onOff;

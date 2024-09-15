@@ -35,7 +35,7 @@ class RoundTextField extends StatelessWidget {
         obscureText: isObsecureText,
         onChanged: onChanged,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical:15,horizontal: 15 ),
+          contentPadding: const EdgeInsets.symmetric(vertical:15,horizontal: 15 ),
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           hintText: hintText,         // here
@@ -50,7 +50,7 @@ class RoundTextField extends StatelessWidget {
             ),
           ),
           suffixIcon: rightIcon,
-          hintStyle: TextStyle(fontSize: 12, color : AppColors.grayColor),
+          hintStyle: const TextStyle(fontSize: 12, color : AppColors.grayColor),
         ),
         validator: validator,
       ),
