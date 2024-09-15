@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:timed/screens/home%20screen.dart';
-import 'package:timed/screens/login%20screen.dart';
+import 'package:timed/screens/home_screen.dart';
+import 'package:timed/screens/login_screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
@@ -97,17 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: media.height*0.03,
-                        ),
-                        Text("Yo",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.blackColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400
-                        ),
-                        ),
+   
                         SizedBox(
                           height: media.height*0.03,
                         ),
@@ -326,6 +316,30 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(
                     height: media.width*0.05,
                   ),
+                  TextButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>LoignScreen()));
+                  }, 
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: AppColors.blackColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      children: [
+                        TextSpan(text: "Already have an account?"),
+                        TextSpan(
+                          text: "Login",
+                          style: TextStyle(
+                            color: AppColors.secondaryColor1,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500
+                          )
+                        )
+                      ]
+                    ),
+                  ))
                   
 
                 ],

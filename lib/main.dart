@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timed/screens/login%20screen.dart';
+import 'package:timed/screens/login_screen.dart';
 
 void main() {
   runApp( MyApp());

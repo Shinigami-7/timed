@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timed/screens/home%20screen.dart';
+import 'package:timed/screens/home_screen.dart';
 import 'package:timed/screens/signup_screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
@@ -65,7 +65,7 @@ class _LoignScreenState extends State<LoignScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          height: media.height*0.03,
+                          height: media.height*0.02,
                         ),
                         Text("Hey there",
                         textAlign: TextAlign.center,
