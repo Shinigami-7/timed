@@ -16,13 +16,15 @@ void main() async {
 class MyApp extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+   MyApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Timed",
       debugShowCheckedModeBanner: false,
-      home: _auth.currentUser!= null ? const Homescreen() : const LoginScreen() ,
+      home:  _auth.currentUser!= null ? const Homescreen() : const LoginScreen() ,
     );
   }
 }
