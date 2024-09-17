@@ -16,7 +16,7 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  CollectionReference _users = FirebaseFirestore.instance.collection("user");
+  final CollectionReference _users = FirebaseFirestore.instance.collection("user");
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
@@ -36,12 +36,12 @@ class _SignupScreenState extends State<SignupScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Homescreen(),
+            builder: (context) =>  const Homescreen(),
           ));
       return user;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content:
                 Text("Login Failed, Please check your email and password")),
       );
@@ -78,7 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       if (!_isCheck) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Please accept the Terms and Conditions")));
+            const SnackBar(content: Text("Please accept the Terms and Conditions")));
       }
     }
   }
@@ -266,11 +266,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                 'password': _passController.text,
                               });
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Account created")));
+                                  const SnackBar(content: Text("Account created")));
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LoginScreen()));
+                                      builder: (context) => const LoginScreen()));
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(e.toString())));
