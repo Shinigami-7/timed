@@ -87,7 +87,7 @@ class _HomescreenState extends State<Homescreen> {
         ),
         body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection("users")
+              .collection("user")
               .doc(user!.uid)
               .collection('reminder')
               .snapshots(),
@@ -95,7 +95,7 @@ class _HomescreenState extends State<Homescreen> {
               if(snapshot.connectionState == ConnectionState.waiting){
                 return Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4FA8C5)),
                   ),
                 );
               }
