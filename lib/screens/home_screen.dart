@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:timed/services/notification_logic.dart';
 import 'package:timed/utils/app_colors.dart';
-import 'package:timed/widgets/add_reminder.dart';
-import 'package:timed/widgets/delete_reminder.dart';
+import 'package:timed/widgets/forReminder/add_reminder.dart';
+import 'package:timed/widgets/forReminder/delete_reminder.dart';
 import 'package:timed/widgets/switcher.dart';
 
 class Homescreen extends StatefulWidget {
@@ -47,44 +47,13 @@ class _HomescreenState extends State<Homescreen> {
           backgroundColor: AppColors.whiteColor,
           centerTitle: true,
           elevation: 0,
-          title: Text("Reminder App",style: TextStyle(
+          title: Text("Reminder",style: TextStyle(
             color: AppColors.blackColor,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),),
         ),
-        floatingActionButton: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100)
-          ),
-          onPressed: ()async{
-            addReminder(context, user!.uid);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.primaryG,
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight
-              ),
-              borderRadius: BorderRadius.circular(100),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 2,
-                  offset: Offset(0,2),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-          ),
-        ),
+        
         body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection("user")

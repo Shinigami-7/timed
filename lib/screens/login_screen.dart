@@ -32,11 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
             content:
                 Text("Login Successful")),
                 );
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Homescreen(),
-          ));
+       Navigator.pushReplacementNamed(context, '/home');
       return user;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -166,20 +162,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: media.width * 0.1,
                   ),
-                  ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/home');
-                },
-                child: Text('Login'),
-              ),
-                  // RoundGradientButton(
-                  //     title: "Login",
-                  //     onPressed: () {
-                  //       if (_formKey.currentState!.validate()) {
-                  //         _signIn(context, _emailController.text,
-                  //             _passController.text);
-                  //       }
-                  //     }),
+                  
+                  RoundGradientButton(
+                      title: "Login",
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _signIn(context, _emailController.text,
+                              _passController.text);
+                        }
+                      }),
                   SizedBox(
                     height: media.width * 0.1,
                   ),

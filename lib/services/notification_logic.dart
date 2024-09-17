@@ -20,7 +20,7 @@ class NotificationLogic{
 
   static Future init(BuildContext context, String uid) async{
     tz.initializeTimeZones();
-    final android = AndroidInitializationSettings("clock");
+    final android = const AndroidInitializationSettings("clock");
     final settings =  InitializationSettings(android: android);
     await _notifications.initialize(settings,
     onDidReceiveNotificationResponse: (payload){

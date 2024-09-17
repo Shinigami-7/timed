@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Timed",
       debugShowCheckedModeBanner: false,
-      home: _auth.currentUser != null ?  MainNavigationBar() : const LoginScreen(),
+    
+      home: _auth.currentUser != null ?  const MainNavigationBar() : const LoginScreen(),
     );
   }
 }

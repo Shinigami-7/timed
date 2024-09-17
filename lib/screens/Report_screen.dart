@@ -5,7 +5,7 @@ class ReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(child: Text("Report Screen" ,style: TextStyle(fontSize: 30),),),
 
     );
