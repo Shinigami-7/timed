@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timed/utils/app_colors.dart'; // Assuming you have AppColors defined
+import 'package:timed/widgets/build_menu_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -22,11 +23,19 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: media.height * 0.03),
-            // Profile Picture
-            CircleAvatar(
+            // Profile Picture (from separate file)
+             CircleAvatar(
               radius: 60,
               backgroundColor: Colors.grey.shade200,
-              backgroundImage: AssetImage('assets/icons/me.jpg'), // Your image
+              backgroundImage: AssetImage('assets/icons/me.jpg'),
+              child: ClipOval(
+                child: Image.asset(
+                  "assets/icons/me.jpg",
+                  fit: BoxFit.cover,
+                  width: 190,
+                  height: 190,
+                ),
+              ),
             ),
             SizedBox(height: media.height * 0.02),
             // Name
@@ -49,7 +58,6 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(height: media.height * 0.005),
             // Edit Info
             TextButton(
-              
               onPressed: () {},
               child: const Text(
                 "Edit Info",
@@ -60,45 +68,13 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: media.height * 0.03),
-            // Buttons for different actions
-            _buildMenuButton("My Medicines", Colors.green, Colors.blue),
-            _buildMenuButton("Settings", Colors.green, Colors.blue),
-            _buildMenuButton("Privacy Policy", Colors.green, Colors.blue),
-            _buildMenuButton("About Us", Colors.green, Colors.blue),
-            _buildMenuButton("Logout", Colors.green, Colors.blue),
+            // Buttons for different actions (using GradientButton widget from another file)
+            GradientButton(title: "My Medicines", onPressed: () {}),
+            GradientButton(title: "Settings", onPressed: () {}),
+            GradientButton(title: "Privacy Policy", onPressed: () {}),
+            GradientButton(title: "About Us", onPressed: () {}),
+            GradientButton(title: "Logout", onPressed: () {}),
           ],
-        ),
-      ),
-    );
-  }
-
-  // Helper function to create a button with a gradient background
-  Widget _buildMenuButton(String title, Color startColor, Color endColor) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 40),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [startColor, endColor],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: TextButton(
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
         ),
       ),
     );
