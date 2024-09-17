@@ -19,9 +19,9 @@ addReminder(BuildContext context, String uid) {
       reminderModel.onOff = false;
 
       FirebaseFirestore.instance
-          .collection('users')  // Corrected FirebaseFirestore collection path
+          .collection('user')  // Corrected FirebaseFirestore collection path
           .doc(uid)
-          .collection('reminders')
+          .collection('reminder')
           .doc()
           .set(reminderModel.toMap());
 

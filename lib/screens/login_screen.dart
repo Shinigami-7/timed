@@ -166,14 +166,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: media.width * 0.1,
                   ),
-                  RoundGradientButton(
-                      title: "Login",
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _signIn(context, _emailController.text,
-                              _passController.text);
-                        }
-                      }),
+                  ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/home');
+                },
+                child: Text('Login'),
+              ),
+                  // RoundGradientButton(
+                  //     title: "Login",
+                  //     onPressed: () {
+                  //       if (_formKey.currentState!.validate()) {
+                  //         _signIn(context, _emailController.text,
+                  //             _passController.text);
+                  //       }
+                  //     }),
                   SizedBox(
                     height: media.width * 0.1,
                   ),
