@@ -30,8 +30,8 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
-        children: widgetList,
         index: myIndex,
+        children: widgetList,
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -45,7 +45,7 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
             });
           }
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
