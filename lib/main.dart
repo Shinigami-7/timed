@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:timed/firebase_options.dart';
 import 'package:timed/screens/login_screen.dart';
 import 'package:timed/widgets/navigation_bar.dart';
@@ -23,8 +23,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Timed",
       debugShowCheckedModeBanner: false,
-    
-      home: _auth.currentUser != null ?  const MainNavigationBar() : const LoginScreen(),
+      home: _auth.currentUser != null
+          ? const MainNavigationBar()
+          : const LoginScreen(),
     );
   }
 }

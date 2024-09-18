@@ -85,7 +85,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                           onPressed: () {
                             deleteAppointment(context, data!.docs[index].id, user!.uid);
                           },
-                          icon: FaIcon(FontAwesomeIcons.circleXmark),
+                          icon: const FaIcon(FontAwesomeIcons.circleXmark),
                         ),
                       ],
                     ),
