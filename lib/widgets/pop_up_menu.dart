@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timed/screens/Report_screen.dart';
-import 'package:timed/screens/appointment_screen.dart';
-import 'package:timed/screens/home_screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/forAppointment/add_appointment.dart';
 import 'package:timed/widgets/forReminder/add_reminder.dart';
@@ -21,7 +19,7 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
   @override
   void initState() {
     super.initState();
-    user = FirebaseAuth.instance.currentUser;  // Initialize user here
+    user = FirebaseAuth.instance.currentUser; // Initialize user here
   }
 
   @override
@@ -31,10 +29,10 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
         await showMenu(
           context: context,
           position: RelativeRect.fromLTRB(
-            0,
-            MediaQuery.of(context).size.height - 200, // Adjust vertical position as needed
-            0,
-            0,
+            MediaQuery.of(context).size.width / 2 - 100, // Center horizontally
+            MediaQuery.of(context).size.height - 200, // Adjust vertical position to appear above the bottom navigation bar
+            MediaQuery.of(context).size.width / 2 - 100, // Center horizontally
+            MediaQuery.of(context).padding.bottom + 50, // Ensure it appears above the bottom navigation bar
           ),
           items: [
             PopupMenuItem(
@@ -43,9 +41,6 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
                 title: const Text('Home'),
                 onTap: () {
                   addReminder(context, user!.uid);
-                  // Navigator.of(context).pushReplacement(
-                  //   MaterialPageRoute(builder: (_) => const Homescreen()),
-                  // )
                 },
               ),
             ),
@@ -55,7 +50,7 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
                 title: const Text('Appointments'),
                 onTap: () {
                   if (user != null) {
-                    addAppointment(context, user!.uid);  // Ensure user is not null
+                    addAppointment(context, user!.uid); // Ensure user is not null
                   } else {
                     Fluttertoast.showToast(msg: 'User not logged in');
                   }
@@ -86,11 +81,11 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
             end: Alignment.bottomRight,
           ),
           boxShadow: const [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 3,
-                  offset: Offset(0,2),
-                ),
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 3,
+              offset: Offset(0, 2),
+            ),
           ],
           borderRadius: BorderRadius.circular(30), // Rounded corners
         ),

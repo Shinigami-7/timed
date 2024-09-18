@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:timed/screens/home_screen.dart';
 import 'package:timed/screens/login_screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
+import 'package:timed/services/notification_logic.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -27,25 +27,37 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isCheck = false;
   final _formKey = GlobalKey<FormState>();
 
-  Future<User?> _signIn(
-      BuildContext context, String email, String password) async {
+  Future<void> _signUp(BuildContext context, String email, String password) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       User? user = userCredential.user;
-      Navigator.push(
+
+      if (user != null) {
+        // Initialize notifications after user signs up successfully
+        await NotificationLogic.init(context, user.uid);
+
+        await _users.doc(user.uid).set({
+          'fullname': _fullnameController.text,
+          'email': _emailController.text,
+          'password': _passController.text,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Account created")),
+        );
+
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) =>  const Homescreen(),
-          ));
-      return user;
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text("Login Failed, Please check your email and password")),
+        SnackBar(content: Text(e.toString())),
       );
-      return null;
     }
   }
 
@@ -65,28 +77,6 @@ class _SignupScreenState extends State<SignupScreen> {
   bool validateEmail(String email) {
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
     return emailRegex.hasMatch(email);
-  }
-
-  String errorText = '';
-
-  void signUp() {
-    if (_formKey.currentState!.validate() && _isCheck) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    } else {
-      if (!_isCheck) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Please accept the Terms and Conditions")));
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    //TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -165,12 +155,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintText: "Password",
                     icon: Icons.lock,
                     textInputType: TextInputType.text,
-                    isObsecureText: _isObscurepass,
+                    isObscureText: _isObscurepass,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your Password";
                       } else if (value.length < 6) {
-                        return "Password must be atleast 6 character long";
+                        return "Password must be at least 6 characters long";
                       }
                       return null;
                     },
@@ -198,14 +188,14 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintText: "Confirm Password",
                     icon: Icons.lock,
                     textInputType: TextInputType.text,
-                    isObsecureText: _isObscureconfirm,
+                    isObscureText: _isObscureconfirm,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your Password";
                       } else if (value != _passController.text) {
-                        return "Password doesn't match";
+                        return "Passwords don't match";
                       } else if (value.length < 6) {
-                        return "Password must be atleast 6 character long";
+                        return "Password must be at least 6 characters long";
                       }
                       return null;
                     },
@@ -240,7 +230,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               : Icons.check_box_outline_blank)),
                       const Expanded(
                         child: Text(
-                            "By continuing you accept our Privacy and Policy and term of use"),
+                            "By continuing you accept our Privacy Policy and Terms of Use"),
                       ),
                     ],
                   ),
@@ -248,36 +238,19 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: media.width * 0.1,
                   ),
                   RoundGradientButton(
-                      title: "Create Account",
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          if (_isCheck) {
-                            try {
-                              UserCredential userCredential =
-                                  await _auth.createUserWithEmailAndPassword(
-                                email: _emailController.text,
-                                password: _passController.text,
-                              );
-                              String uid = userCredential.user!.uid;
-
-                              await _users.doc(uid).set({
-                                'fullname': _fullnameController.text,
-                                'email': _emailController.text,
-                                'password': _passController.text,
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Account created")));
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginScreen()));
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(e.toString())));
-                            }
-                          }
+                    title: "Create Account",
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (_isCheck) {
+                          _signUp(context, _emailController.text, _passController.text);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Please accept the Terms and Conditions")),
+                          );
                         }
-                      }),
+                      }
+                    },
+                  ),
                   SizedBox(
                     height: media.width * 0.1,
                   ),
@@ -298,7 +271,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       Expanded(
                           child: Container(
-                        width: double.maxFinite,
+                        width: double.infinity,
                         height: 1,
                         color: AppColors.grayColor.withOpacity(0.5),
                       )),
@@ -357,30 +330,34 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: media.width * 0.05,
                   ),
                   TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()));
-                      },
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: const TextSpan(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        style: TextStyle(
+                          color: AppColors.blackColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        children: [
+                          TextSpan(text: "Already have an account? "),
+                          TextSpan(
+                            text: "Login",
                             style: TextStyle(
-                              color: AppColors.blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
+                              color: AppColors.secondaryColor1,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
                             ),
-                            children: [
-                              TextSpan(text: "Already have an account?"),
-                              TextSpan(
-                                  text: "Login",
-                                  style: TextStyle(
-                                      color: AppColors.secondaryColor1,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500))
-                            ]),
-                      ))
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

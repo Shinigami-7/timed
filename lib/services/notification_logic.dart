@@ -1,53 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:timed/screens/home_screen.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
 
-class NotificationLogic{
+class NotificationLogic {
   static final _notifications = FlutterLocalNotificationsPlugin();
-  static final onNoticications = BehaviorSubject<String?>();
+  static final onNotifications = BehaviorSubject<String?>();
 
-  static Future _notificationsDetail() async{
+  // Method to request notification permissions
+  static Future<void> requestNotificationPermissions() async {
+    var status = await Permission.notification.status;
+    if (status != PermissionStatus.granted) {
+      final result = await Permission.notification.request();
+      if (result != PermissionStatus.granted) {
+        print("Notification Permission Denied");
+      } else {
+        print("Notification Permission Granted");
+      }
+    } else {
+      print("Notification Permission Already Granted");
+    }
+  }
+
+  // Initialization settings for the notifications
+  static Future<void> _initializeNotifications() async {
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    final settings = const InitializationSettings(android: android);
+    await _notifications.initialize(
+      settings,
+      onDidReceiveNotificationResponse: (notificationResponse) {
+        // Handle notification tap here
+        onNotifications.add(notificationResponse.payload);
+      },
+    );
+  }
+
+  // Initialization of the notification logic
+  static Future<void> init(BuildContext context, String uid) async {
+    tz.initializeTimeZones();
+    await _initializeNotifications();
+    await requestNotificationPermissions();
+  }
+
+  // Method to configure notification details
+  static Future<NotificationDetails> _notificationDetails() async {
     return const NotificationDetails(
       android: AndroidNotificationDetails(
-        "Shedule Reminder", "Don't Forget to Drink Water",
-        importance: Importance.max,priority: Priority.max
-      )
+        "reminder_channel_id",
+        "Reminder Channel",
+        importance: Importance.max,
+        priority: Priority.max,
+        playSound: true,
+        enableVibration: true,
+      ),
     );
   }
 
-  static Future init(BuildContext context, String uid) async{
-    tz.initializeTimeZones();
-    final android = const AndroidInitializationSettings("clock");
-    final settings =  InitializationSettings(android: android);
-    await _notifications.initialize(settings,
-    onDidReceiveNotificationResponse: (payload){
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Homescreen())
-        );
-      onNoticications.add(payload as String?);
-    }
-    );
-  }
-
-  static Future showNotifications({
-    int id=0,
-    String? title,
-    String? body,
-    String? payload,
+  // Method to schedule alarms
+  static Future<void> scheduleAlarm({
+    required int id,
+    required String title,
+    required String body,
     required DateTime dateTime,
-  })async{
-    if(dateTime.isBefore(DateTime.now())){
+  }) async {
+    if (dateTime.isBefore(DateTime.now())) {
       dateTime = dateTime.add(const Duration(days: 1));
     }
 
-    _notifications.zonedSchedule(id, title, body,
-        tz.TZDateTime.from(dateTime, tz.local), await _notificationsDetail(),
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        androidAllowWhileIdle: true,
-        matchDateTimeComponents: DateTimeComponents.time); 
+    await _notifications.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(dateTime, tz.local),
+      await _notificationDetails(),
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  // Method to cancel a scheduled alarm
+  static Future<void> cancelAlarm(int id) async {
+    await _notifications.cancel(id);
+  }
+
+  // Method to check if an alarm is scheduled
+  static Future<bool> isAlarmScheduled(int id) async {
+    final pendingNotifications = await _notifications.pendingNotificationRequests();
+    return pendingNotifications.any((notification) => notification.id == id);
   }
 }

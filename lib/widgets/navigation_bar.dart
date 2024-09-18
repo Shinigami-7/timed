@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:timed/screens/Report_screen.dart';
 import 'package:timed/screens/appointment_screen.dart';
 import 'package:timed/screens/home_screen.dart';

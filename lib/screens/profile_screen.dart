@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timed/utils/app_colors.dart'; // Assuming you have AppColors defined
+// Assuming you have AppColors defined
 import 'package:timed/widgets/build_menu_button.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -27,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
              CircleAvatar(
               radius: 60,
               backgroundColor: Colors.grey.shade200,
-              backgroundImage: AssetImage('assets/icons/me.jpg'),
+              backgroundImage: const AssetImage('assets/icons/me.jpg'),
               child: ClipOval(
                 child: Image.asset(
                   "assets/icons/me.jpg",
