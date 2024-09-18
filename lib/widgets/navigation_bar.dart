@@ -25,6 +25,19 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
   ];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Check if there are arguments passed to the screen
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is int) {
+      setState(() {
+        myIndex = args; // Update the selected tab index if arguments are passed
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
@@ -37,6 +50,7 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
         selectedItemColor: AppColors.primaryColor2,
         onTap: (index) {
           if (index == 2) {
+            // PopupMenuWidget logic
           } else {
             setState(() {
               myIndex = index;

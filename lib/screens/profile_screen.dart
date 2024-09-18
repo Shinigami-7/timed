@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timed/services/logout_service.dart';
 import 'package:timed/utils/app_colors.dart'; // Assuming you have AppColors defined
 
 import 'package:timed/screens/aboutus_screen.dart';
@@ -88,7 +89,9 @@ class ProfileScreen extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (context) => const AboutUsScreen()),
     );}),
-            GradientButton(title: "Logout", onPressed: () {}),
+            GradientButton(title: "Logout", onPressed: () {
+              LogoutService().logout(context);
+            }),
           ],
         ),
       ),
