@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:timed/services/notification_logic.dart';
 import 'package:timed/utils/app_colors.dart';
+import 'package:timed/widgets/forReminder/add_reminder.dart';
 import 'package:timed/widgets/forReminder/delete_reminder.dart';
 import 'package:timed/widgets/switcher.dart';
 
