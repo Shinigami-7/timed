@@ -54,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: SafeArea(
@@ -66,10 +67,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset('assets/icons/timed.png',
-                    fit: BoxFit.cover,
-                    width: 190,
-                    height: 190,
+                    fit: BoxFit.contain,
+                    width: media.width*0.7,
+                    height: media.height*0.2,
                   ),
+                  SizedBox(height: media.width*0.03,),
+                  Text(
+                    "Welcome Back",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: media.width*0.02,),
                   RoundTextField(
                     textEditingController: _emailController,
                     hintText: "Email",
@@ -115,6 +122,82 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     },
                   ),
+                  SizedBox(
+                    height: media.width * 0.1,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Container(
+                        width: double.infinity,
+                        height: 1,
+                        color: AppColors.grayColor.withOpacity(0.5),
+                      )),
+                      const Text(
+                        " Or ",
+                        style: TextStyle(
+                            color: AppColors.grayColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      Expanded(
+                          child: Container(
+                        width: double.infinity,
+                        height: 1,
+                        color: AppColors.grayColor.withOpacity(0.5),
+                      )),
+                    ],
+                  ),
+                  SizedBox(
+                    width: media.width * 0.05,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: AppColors.primaryColor1.withOpacity(0.5),
+                                width: 1,
+                              )),
+                          child: Image.asset(
+                            "assets/icons/google.png",
+                            height: 20,
+                            width: 20,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 30,
+                      ),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: AppColors.primaryColor1.withOpacity(0.5),
+                                width: 1,
+                              )),
+                          child: Image.asset(
+                            "assets/icons/facebook.png",
+                            height: 20,
+                            width: 20,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: media.width*0.03,),
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
@@ -123,8 +206,29 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => const SignupScreen()),
                       );
                     },
-                    child: const Text("Don't have an account? Sign Up"),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        style: TextStyle(
+                          color: AppColors.blackColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        children: [
+                          TextSpan(text: "Don't have an Account? "),
+                          TextSpan(
+                            text: "Sign Up",
+                            style: TextStyle(
+                              color: AppColors.secondaryColor1,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+                  
                 ],
               ),
             ),
