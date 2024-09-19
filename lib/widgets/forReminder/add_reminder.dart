@@ -2,24 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timed/model/reminder_model.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // FontAwesome icon package
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:timed/utils/app_colors.dart';
 
 addReminder(BuildContext context, String uid) {
   TimeOfDay time = TimeOfDay.now();
-  
-  add(String uid, TimeOfDay time) {
+  String medicineName = ""; // Add a field for medicine name
+
+  add(String uid, TimeOfDay time, String medicineName) {
     try {
       DateTime d = DateTime.now();
       DateTime dateTime = DateTime(d.year, d.month, d.day, time.hour, time.minute);
       Timestamp timestamp = Timestamp.fromDate(dateTime);
 
-      ReminderModel reminderModel = ReminderModel();
-      reminderModel.timeStamp = timestamp;
-      reminderModel.onOff = false;
+      ReminderModel reminderModel = ReminderModel(
+        timeStamp: timestamp,
+        onOff: false,
+        medicineName: medicineName, // Add medicine name here
+      );
 
       FirebaseFirestore.instance
-          .collection('user')  // Corrected FirebaseFirestore collection path
+          .collection('user')
           .doc(uid)
           .collection('reminder')
           .doc()
@@ -66,13 +69,22 @@ addReminder(BuildContext context, String uid) {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          time.format(context), // Corrected format call
+                          time.format(context),
                           style: const TextStyle(
                             color: AppColors.primaryColor1,
                             fontSize: 30,
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  TextField(
+                    onChanged: (value) {
+                      medicineName = value; // Update medicine name
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "Medicine Name",
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ],
@@ -87,7 +99,7 @@ addReminder(BuildContext context, String uid) {
               ),
               TextButton(
                 onPressed: () {
-                  add(uid, time);
+                  add(uid, time, medicineName); // Pass medicine name
                   Navigator.pop(context);
                 },
                 child: const Text('ADD'),

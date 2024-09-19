@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timed/services/logout_service.dart';
 import 'package:timed/utils/app_colors.dart'; // Assuming you have AppColors defined
 
 import 'package:timed/screens/aboutus_screen.dart';
@@ -79,6 +80,23 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(height: media.height * 0.03),
             // Buttons for different actions (using GradientButton widget from another file)
             GradientButton(title: "My Medicines", onPressed: () {}),
+
+            GradientButton(title: "Settings", onPressed: () { Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingScreen()),
+    );}),
+            GradientButton(title: "Privacy Policy", onPressed: () { Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyScreen()),
+    );}),
+            GradientButton(title: "About Us", onPressed: () { Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const AboutUsScreen()),
+    );}),
+            GradientButton(title: "Logout", onPressed: () {
+              LogoutService().logout(context);
+            }),
+
             GradientButton(title: "Settings", onPressed: () { 
               Navigator.pushReplacement(
                 context,
@@ -103,6 +121,7 @@ class ProfileScreen extends StatelessWidget {
                 _showLogoutConfirmation(context); // Show logout confirmation
               },
             ),
+
           ],
         ),
       ),

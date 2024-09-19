@@ -1,13 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:timed/services/notification_logic.dart';
 import 'package:timed/utils/app_colors.dart';
-import 'package:timed/widgets/forReminder/add_reminder.dart';
-import 'package:timed/widgets/forReminder/delete_reminder.dart';
-import 'package:timed/widgets/switcher.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -18,7 +14,6 @@ class Homescreen extends StatefulWidget {
 
 class _HomescreenState extends State<Homescreen> {
   User? user;
-  bool on = true;
 
   @override
   void initState() {
@@ -37,7 +32,6 @@ class _HomescreenState extends State<Homescreen> {
   }
 
   void onClickedNotifications(String? payload) {
-    // Handle the notification tap, e.g., navigate to a specific screen or show a dialog
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const Homescreen()),
@@ -45,11 +39,10 @@ class _HomescreenState extends State<Homescreen> {
   }
 
   Future<void> scheduleAlarmForReminder(DateTime dateTime, int id) async {
-    // Schedule an alarm with the given dateTime and id
     await NotificationLogic.scheduleAlarm(
       id: id,
       title: "Reminder Title",
-      body: "Don't forget to drink water",
+      body: "Don't forget to take your medicine",
       dateTime: dateTime,
     );
   }
@@ -79,7 +72,7 @@ class _HomescreenState extends State<Homescreen> {
                 stream: FirebaseFirestore.instance
                     .collection("user")
                     .doc(user!.uid)
-                    .collection('reminder')
+                    .collection('medications')
                     .snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -89,7 +82,7 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                     );
                   }
-                  if (snapshot.data?.docs.isEmpty ?? true) {
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(
                       child: Text("Nothing to show"),
                     );
@@ -98,45 +91,99 @@ class _HomescreenState extends State<Homescreen> {
                   return ListView.builder(
                     itemCount: data?.docs.length,
                     itemBuilder: (context, index) {
-                      Timestamp t = data?.docs[index].get('time');
-                      DateTime date = DateTime.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch);
-                      String formattedTime = DateFormat.jm().format(date);
-                      on = data!.docs[index].get('onOff');
-                      if (on) {
-                        // Schedule the alarm for the reminder
-                        scheduleAlarmForReminder(date, index);
-                      } else {
-                        // Optionally cancel the alarm if it's turned off
-                        NotificationLogic.cancelAlarm(index);
+                      final doc = data!.docs[index].data() as Map<String, dynamic>;
+
+                      // Extract medicine details
+                      String medicineName = doc['medicineName'] ?? 'No medicine name';
+                      int frequency = doc['frequency'] ?? 0;
+
+                      // Extract times and doses
+                      List<String> formattedTimes = [];
+                      List<int> doses = [];
+                      for (int i = 1; i <= 10; i++) {
+                        String timeKey = 'time$i';
+                        String doseKey = 'dose$i';
+                        if (doc.containsKey(timeKey) && doc.containsKey(doseKey)) {
+                          Timestamp timestamp = doc[timeKey];
+                          DateTime date = DateTime.fromMicrosecondsSinceEpoch(timestamp.microsecondsSinceEpoch);
+                          formattedTimes.add(DateFormat.jm().format(date));
+                          doses.add(doc[doseKey] ?? 0);
+                        }
                       }
+
+                      // Display frequency in a readable format
+                      String frequencyText;
+                      switch (frequency) {
+                        case 1:
+                          frequencyText = "Once daily";
+                          break;
+                        case 2:
+                          frequencyText = "Twice daily";
+                          break;
+                        case 3:
+                          frequencyText = "Three times daily";
+                          break;
+                        default:
+                          frequencyText = "Other";
+                      }
+
+                      // Schedule alarms
+                      if (formattedTimes.isNotEmpty) {
+                        for (int i = 0; i < formattedTimes.length; i++) {
+                          scheduleAlarmForReminder(
+                            DateTime.fromMicrosecondsSinceEpoch(doc['time${i + 1}'].microsecondsSinceEpoch),
+                            index * 10 + i,
+                          );
+                        }
+                      }
+
                       return Padding(
                         padding: const EdgeInsets.all(8),
                         child: Card(
                           child: ListTile(
-                            title: Text(
-                              formattedTime,
-                              style: const TextStyle(fontSize: 30),
-                            ),
-                            subtitle: const Text("Everyday"),
-                            trailing: SizedBox(
-                              width: 110,
-                              child: Row(
-                                children: [
-                                  Switcher(
-                                    on,
-                                    user!.uid,
-                                    data.docs[index].id,
-                                    data.docs[index].get('time'),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '$medicineName',
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Frequency: $frequencyText',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 5),
+                                // Display times in a row
+                                if (formattedTimes.isNotEmpty)
+                                  Row(
+                                    children: formattedTimes.map((time) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: Text(
+                                          time,
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                  IconButton(
-                                    onPressed: () {
-                                      deleteReminder(context, data.docs[index].id, user!.uid);
-                                    },
-                                    icon: const FaIcon(FontAwesomeIcons.circleXmark),
+                                const SizedBox(height: 5),
+                                // Display doses in a row
+                                if (doses.isNotEmpty)
+                                  Row(
+                                    children: doses.map((dose) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: Text(
+                                          '$dose pill(s)',
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                ],
-                              ),
+                              ],
                             ),
+                            subtitle: const Text("Reminder"),
                           ),
                         ),
                       );
