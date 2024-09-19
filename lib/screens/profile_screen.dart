@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:timed/services/logout_service.dart';
-import 'package:timed/utils/app_colors.dart'; 
 import 'package:timed/screens/aboutus_screen.dart';
-import 'package:timed/screens/login_screen.dart';
 import 'package:timed/screens/privacy_screen.dart';
 import 'package:timed/screens/setting_screen.dart';
-import 'package:timed/widgets/build_menu_button.dart'; 
 import 'package:timed/widgets/build_menu_button.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -77,47 +74,38 @@ class ProfileScreen extends StatelessWidget {
             // Buttons for different actions (using GradientButton widget from another file)
             GradientButton(title: "My Medicines", onPressed: () {}),
 
-            GradientButton(title: "Settings", onPressed: () { Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingScreen()),
-    );}),
-            GradientButton(title: "Privacy Policy", onPressed: () { Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const PrivacyScreen()),
-    );}),
-            GradientButton(title: "About Us", onPressed: () { Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const AboutUsScreen()),
-    );}),
-            GradientButton(title: "Logout", onPressed: () {
-              LogoutService().logout(context);
-            }),
-
-            GradientButton(title: "Settings", onPressed: () { 
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingScreen()),
-              );
-            }),
-            GradientButton(title: "Privacy Policy", onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const PrivacyScreen()),
-              );
-            }),
-            GradientButton(title: "About Us", onPressed: () { 
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const AboutUsScreen()),
-              );
-            }),
             GradientButton(
-              title: "Logout",
-              onPressed: () {
-                _showLogoutConfirmation(context); // Show logout confirmation
-              },
-            ),
-
+                title: "Settings",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SettingScreen()),
+                  );
+                }),
+            GradientButton(
+                title: "Privacy Policy",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PrivacyScreen()),
+                  );
+                }),
+            GradientButton(
+                title: "About Us",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AboutUsScreen()),
+                  );
+                }),
+            GradientButton(
+                title: "Logout",
+                onPressed: () {
+                  LogoutService().logout(context);
+                }),
           ],
         ),
       ),
@@ -125,35 +113,5 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Function to show logout confirmation dialog
-  void _showLogoutConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirm Logout"),
-          content: const Text("Are you sure you want to log out?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog and stay on Profile page
-              },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                // Perform any necessary logout actions here (like clearing user session)
-                // Navigate to the login screen after logout
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              },
-              child: const Text("Yes, Logout"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  
 }

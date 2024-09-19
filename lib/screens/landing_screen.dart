@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:timed/screens/login_screen.dart';
+import 'package:timed/screens/signup_screen.dart';
+import 'package:timed/utils/app_colors.dart';
+import 'package:timed/widgets/round_gradient_button.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Top Image and Text
           SizedBox(
-            height: 300,
+            height: screenHeight * 0.5, 
             child: Stack(
               children: [
                 // The image
                 Positioned.fill(
                   child: Image.asset(
-                    'assets/icons/me.png',
-                    fit: BoxFit.cover,
+                    'assets/images/medications.jpg',
+                    fit: BoxFit.contain,
                   ),
                 ),
                 // Text overlay
-                const Positioned(
+                Positioned(
                   bottom: 20,
                   left: 20,
                   right: 20,
@@ -30,7 +37,7 @@ class LandingScreen extends StatelessWidget {
                     'Monitor your\nHealth Condition timely',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: media.height * 0.03, // Scaled font size
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -39,53 +46,59 @@ class LandingScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Welcome Text
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05, // 5% of screen width
+            ),
             child: Text(
               'Welcome!\nLet\'s Start Your Healthy Medication Journey.',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                fontSize: screenHeight * 0.02, // Scaled font size
+                fontWeight: FontWeight.w400,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
 
-          // Buttons (Login and Signup)
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Implement login functionality
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50), backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ), // Login Button Color
-                  ),
-                  child: const Text('Login'),
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: screenHeight * 0.05, // 5% bottom padding
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+                  child: 
+                  RoundGradientButton(
+                      title: 'Login',
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()));
+                      },
+
+                  )
+                  
                 ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Implement signup functionality
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50), backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ), // Signup Button Color
-                  ),
-                  child: const Text('Signup'),
+                SizedBox(height: screenHeight * 0.02), // Spacing between buttons
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+                  child: RoundGradientButton(
+                      title: 'SignUp',
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignupScreen()));
+                      },
+
+                  )
                 ),
-              ),
-              const SizedBox(height: 40), // Add some bottom padding
-            ],
+              ],
+            ),
           ),
         ],
       ),
