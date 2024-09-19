@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:timed/services/logout_service.dart';
-import 'package:timed/utils/app_colors.dart'; // Assuming you have AppColors defined
-
+import 'package:timed/utils/app_colors.dart'; 
 import 'package:timed/screens/aboutus_screen.dart';
 import 'package:timed/screens/login_screen.dart';
 import 'package:timed/screens/privacy_screen.dart';
 import 'package:timed/screens/setting_screen.dart';
-import 'package:timed/widgets/build_menu_button.dart'; // Assuming you have AppColors defined
-=======
-// Assuming you have AppColors defined
-
+import 'package:timed/widgets/build_menu_button.dart'; 
 import 'package:timed/widgets/build_menu_button.dart';
 
 class ProfileScreen extends StatelessWidget {

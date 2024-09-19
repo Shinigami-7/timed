@@ -89,13 +89,17 @@ class _SignupScreenState extends State<SignupScreen> {
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+            
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: media.height * 0.1,
+                  
+                   Image.asset('assets/icons/timed.png',
+                    fit: BoxFit.contain,
+                    width: media.width*0.7,
+                    height: media.height*0.2,
                   ),
                   SizedBox(
                     width: media.width,
