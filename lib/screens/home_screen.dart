@@ -38,13 +38,9 @@ class _HomescreenState extends State<Homescreen> {
     );
   }
 
-  Future<void> scheduleAlarmForReminder(DateTime dateTime, int id) async {
-    await NotificationLogic.scheduleAlarm(
-      id: id,
-      title: "Reminder Title",
-      body: "Don't forget to take your medicine",
-      dateTime: dateTime,
-    );
+  String getCurrentDayAndDate() {
+    DateTime now = DateTime.now();
+    return '${DateFormat('EEEE').format(now)}, ${DateFormat('d MMM').format(now)}';
   }
 
   @override
@@ -53,17 +49,37 @@ class _HomescreenState extends State<Homescreen> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
-          leading: Container(),
           backgroundColor: AppColors.whiteColor,
-          centerTitle: true,
           elevation: 0,
-          title: const Text(
-            "Reminder",
-            style: TextStyle(
-              color: AppColors.blackColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+          title: Row(
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    getCurrentDayAndDate(),
+                    style: const TextStyle(
+                      color: AppColors.blackColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    "Reminder",
+                    style: TextStyle(
+                      color: AppColors.blackColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const Spacer(),
+            ],
           ),
         ),
         body: user == null
@@ -93,97 +109,37 @@ class _HomescreenState extends State<Homescreen> {
                     itemBuilder: (context, index) {
                       final doc = data!.docs[index].data() as Map<String, dynamic>;
 
-                      // Extract medicine details
                       String medicineName = doc['medicineName'] ?? 'No medicine name';
                       int frequency = doc['frequency'] ?? 0;
+                      List<Map<String, dynamic>> intakes = List<Map<String, dynamic>>.from(doc['intakes'] ?? []);
 
-                      // Extract times and doses
-                      List<String> formattedTimes = [];
-                      List<int> doses = [];
-                      for (int i = 1; i <= 10; i++) {
-                        String timeKey = 'time$i';
-                        String doseKey = 'dose$i';
-                        if (doc.containsKey(timeKey) && doc.containsKey(doseKey)) {
-                          Timestamp timestamp = doc[timeKey];
-                          DateTime date = DateTime.fromMicrosecondsSinceEpoch(timestamp.microsecondsSinceEpoch);
-                          formattedTimes.add(DateFormat.jm().format(date));
-                          doses.add(doc[doseKey] ?? 0);
-                        }
-                      }
-
-                      // Display frequency in a readable format
-                      String frequencyText;
-                      switch (frequency) {
-                        case 1:
-                          frequencyText = "Once daily";
-                          break;
-                        case 2:
-                          frequencyText = "Twice daily";
-                          break;
-                        case 3:
-                          frequencyText = "Three times daily";
-                          break;
-                        default:
-                          frequencyText = "Other";
-                      }
-
-                      // Schedule alarms
-                      if (formattedTimes.isNotEmpty) {
-                        for (int i = 0; i < formattedTimes.length; i++) {
-                          scheduleAlarmForReminder(
-                            DateTime.fromMicrosecondsSinceEpoch(doc['time${i + 1}'].microsecondsSinceEpoch),
-                            index * 10 + i,
-                          );
-                        }
-                      }
-
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Card(
-                          child: ListTile(
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '$medicineName',
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  'Frequency: $frequencyText',
+                      return Card(
+                        margin: const EdgeInsets.all(8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                medicineName,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Frequency: $frequency times daily',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 8),
+                              ...intakes.map((intake) {
+                                Timestamp timestamp = intake['time'];
+                                DateTime time = timestamp.toDate();
+                                int dose = intake['dose'];
+                                return Text(
+                                  'Time: ${DateFormat.jm().format(time)}, Dose: $dose',
                                   style: const TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(height: 5),
-                                // Display times in a row
-                                if (formattedTimes.isNotEmpty)
-                                  Row(
-                                    children: formattedTimes.map((time) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(right: 8.0),
-                                        child: Text(
-                                          time,
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                const SizedBox(height: 5),
-                                // Display doses in a row
-                                if (doses.isNotEmpty)
-                                  Row(
-                                    children: doses.map((dose) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(right: 8.0),
-                                        child: Text(
-                                          '$dose pill(s)',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                              ],
-                            ),
-                            subtitle: const Text("Reminder"),
+                                );
+                              }),
+                            ],
                           ),
                         ),
                       );

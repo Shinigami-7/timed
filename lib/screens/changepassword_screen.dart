@@ -6,7 +6,7 @@ import 'package:timed/screens/login_screen.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({Key? key}) : super(key: key);
+  const ChangePasswordScreen({super.key});
 
   @override
   _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
@@ -64,7 +64,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Current password is incorrect')),
+            const SnackBar(content: Text('Current password is incorrect')),
           );
         }
       } catch (e) {
@@ -201,7 +201,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20, // Adds some space before the button
             ),
             RoundGradientButton(

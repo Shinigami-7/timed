@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:timed/screens/addMedicine/medicine_intake.dart';
 
 class AddMed extends StatefulWidget {
+  const AddMed({super.key});
+
   @override
   State<AddMed> createState() => _AddMedState();
 }
@@ -24,40 +24,12 @@ class _AddMedState extends State<AddMed> {
     "Simvastatin",
   ];
 
-  Future<void> _saveMedication(String medication) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("User not logged in")),
-      );
-      return;
-    }
-
-    final uid = user.uid;
-    try {
-      await FirebaseFirestore.instance
-          .collection('user')
-          .doc(uid)
-          .collection('medications')
-          .add({
-        'medicineName': medication,
-        'createdAt': Timestamp.now(),
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Medication saved successfully")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to save medication: $e")),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medicine Add Page'),
+        title: const Text('Medicine Add Page'),
       ),
       body: Column(
         children: [
@@ -68,16 +40,16 @@ class _AddMedState extends State<AddMed> {
                   Center(
                     child: Image.asset(
                       'assets/images/medicine.png',
-                      height: 250,
-                      width: 250,
+                      height: media.height*0.2,
+                      width: media.width*0.4,
                     ),
                   ),
-                  Text(
+                  const Text(
                     "Select a medication for reminder",
                     style: TextStyle(fontSize: 20, color: Colors.grey),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
+                  const Padding(
+                    padding: EdgeInsets.all(18.0),
                     child: Divider(
                       color: Colors.blue,
                       thickness: 2,
@@ -87,13 +59,13 @@ class _AddMedState extends State<AddMed> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "Unit",
                           style: TextStyle(fontSize: 20),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         DropdownButton<String>(
-                          hint: Text("Select Medicine"),
+                          hint: const Text("Select Medicine"),
                           value: selectedMedication,
                           onChanged: (String? newValue) {
                             setState(() {
@@ -122,22 +94,21 @@ class _AddMedState extends State<AddMed> {
               child: ElevatedButton(
                 onPressed: () {
                   if (selectedMedication != null) {
-                    _saveMedication(selectedMedication!);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AddMed2(
-                          userInput: selectedMedication!,
+                          medication: selectedMedication!,
                         ),
                       ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Please select a medication")),
+                      const SnackBar(content: Text("Please select a medication")),
                     );
                   }
                 },
-                child: Text("Next"),
+                child: const Text("Next"),
               ),
             ),
           ),

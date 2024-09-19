@@ -14,7 +14,7 @@ class SettingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
               "Setting",
               style: TextStyle(
                 fontSize: 22,
@@ -29,7 +29,7 @@ class SettingScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => const MainNavigationBar(),
-              settings: RouteSettings(arguments: 4),            
+              settings: const RouteSettings(arguments: 4),            
               )
             );
           },

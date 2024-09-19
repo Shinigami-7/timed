@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:timed/screens/add_prescription.dart';
 import 'package:timed/screens/home_screen.dart';
 import 'package:timed/widgets/navigation_bar.dart';
 
 class AddMed3_1_Custom extends StatefulWidget {
-  final int time;
+  final String medication;
+  final int frequency;
 
-  const AddMed3_1_Custom({required this.time});
+  const AddMed3_1_Custom({super.key, required this.medication, required this.frequency});
 
   @override
   State<AddMed3_1_Custom> createState() => _AddMed3State_Custom();
@@ -20,8 +22,8 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
   @override
   void initState() {
     super.initState();
-    timeList = List<TimeOfDay?>.filled(widget.time, null); // Initialize list with null values
-    doseList = List<int>.filled(widget.time, 0); // Initialize doses with default values
+    timeList = List<TimeOfDay?>.filled(widget.frequency, null);
+    doseList = List<int>.filled(widget.frequency, 0);
   }
 
   void _showTimePicker(int index) {
@@ -37,42 +39,47 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
     });
   }
 
-  Future<void> _saveIntakeData() async {
+  Future<void> _saveMedication() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("User not logged in")),
+        const SnackBar(content: Text("User not logged in")),
       );
       return;
     }
 
     final uid = user.uid;
-    final CollectionReference intakeCollection = FirebaseFirestore.instance
-        .collection('user')
-        .doc(uid)
-        .collection('intake');
-
     try {
-      for (int i = 0; i < widget.time; i++) {
-        if (timeList[i] != null && doseList[i] > 0) {
-          await intakeCollection.add({
-            'time': Timestamp.fromDate(DateTime(
-              DateTime.now().year,
-              DateTime.now().month,
-              DateTime.now().day,
-              timeList[i]!.hour,
-              timeList[i]!.minute,
-            )),
-            'dose': doseList[i],
-          });
-        }
-      }
+      final medicationData = {
+        'medicineName': widget.medication,
+        'frequency': widget.frequency,
+        'createdAt': Timestamp.now(),
+        'intakes': List.generate(widget.frequency, (index) => {
+          'time': timeList[index] != null
+              ? Timestamp.fromDate(DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  timeList[index]!.hour,
+                  timeList[index]!.minute,
+                ))
+              : null,
+          'dose': doseList[index],
+        }),
+      };
+
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(uid)
+          .collection('medications')
+          .add(medicationData);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Intake times and doses saved successfully")),
+        const SnackBar(content: Text("Medication saved successfully")),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to save data: $e")),
+        SnackBar(content: Text("Failed to save medication: $e")),
       );
     }
   }
@@ -81,7 +88,7 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medicine Add Page 3 Custom'),
+        title: const Text('Medicine Add Page 3 Custom'),
       ),
       body: Column(
         children: [
@@ -97,64 +104,15 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
                       width: 250,
                     ),
                   ),
-                  Text(
+                  const Text(
                     "Set the reminder times for your \nmedication",
                     style: TextStyle(fontSize: 20, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 20),
-                  for (int i = 0; i < widget.time; i++)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Intake ${i + 1}",
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
-                          ),
-                          Row(
-                            children: [
-                              Icon(Icons.access_time_outlined),
-                              MaterialButton(
-                                onPressed: () => _showTimePicker(i),
-                                child: Text(
-                                  timeList[i] != null ? timeList[i]!.format(context) : 'Select Time',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ),
-                              Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 25),
-                                child: Row(
-                                  children: [
-                                    Text("Dose"),
-                                    SizedBox(width: 8),
-                                    Container(
-                                      width: 50,
-                                      child: TextField(
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          border: UnderlineInputBorder(),
-                                          hintText: "1",
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            doseList[i] = int.tryParse(value) ?? 0;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Text("pill(s)"),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
+                  for (int i = 0; i < widget.frequency; i++)
+                    _buildIntakeRow(i),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -166,18 +124,68 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  await _saveIntakeData();
+                  await _saveMedication();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => MainNavigationBar(),
-                      settings: RouteSettings(arguments: 0),
-                    ),
+                    MaterialPageRoute(builder: (context) => UploadPrescriptionScreen()),
                   );
                 },
-                child: Text("Done"),
+                child: const Text("Next"),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIntakeRow(int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Intake ${index + 1}",
+            style: const TextStyle(fontSize: 18, color: Colors.grey),
+          ),
+          Row(
+            children: [
+              const Icon(Icons.access_time_outlined),
+              MaterialButton(
+                onPressed: () => _showTimePicker(index),
+                child: Text(
+                  timeList[index] != null ? timeList[index]!.format(context) : 'Select Time',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(right: 25),
+                child: Row(
+                  children: [
+                    const Text("Dose"),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 50,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          hintText: "1",
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            doseList[index] = int.tryParse(value) ?? 0;
+                          });
+                        },
+                      ),
+                    ),
+                    const Text("pill(s)"),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

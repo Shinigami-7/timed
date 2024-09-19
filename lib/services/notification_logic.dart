@@ -28,7 +28,7 @@ class NotificationLogic {
   static Future<void> _initializeNotifications() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final settings = InitializationSettings(android: android);
+    final settings = const InitializationSettings(android: android);
 
 
     await _notifications.initialize(

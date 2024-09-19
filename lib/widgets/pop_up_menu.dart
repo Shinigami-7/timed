@@ -4,8 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timed/screens/Report_screen.dart';
 import 'package:timed/screens/addMedicine/select_medicine.dart';
 import 'package:timed/utils/app_colors.dart';
+import 'package:timed/widgets/add_report.dart';
 import 'package:timed/widgets/forAppointment/add_appointment.dart';
-import 'package:timed/widgets/forReminder/add_reminder.dart';
 
 class PopupMenuWidget extends StatefulWidget {
   const PopupMenuWidget({super.key});
@@ -64,7 +64,7 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
                 title: const Text('Reports'),
                 onTap: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const ReportScreen()),
+                    MaterialPageRoute(builder: (_) =>  AddReportScreen()),
                   );
                 },
               ),
