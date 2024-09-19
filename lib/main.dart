@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:timed/firebase_options.dart';
 import 'package:timed/screens/login_screen.dart';
 import 'package:timed/widgets/navigation_bar.dart';
-import 'package:timed/services/notification_logic.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

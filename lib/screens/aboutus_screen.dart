@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timed/widgets/navigation_bar.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -8,23 +9,31 @@ class AboutUsScreen extends StatelessWidget {
     var media = MediaQuery.of(context).size; // For responsive sizing
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "About Us",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+         leading: IconButton(
+          icon: const Icon(Icons.arrow_back), // Back icon
+          onPressed: () {
+             Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationBar(),
+              settings: RouteSettings(arguments: 4),            
+              )
+            );
+          },
+        ),
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: media.height * 0.05), // Space from the top
-            const Center(
-              child: Text(
-                "About Us",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
+            SizedBox(height: media.height * 0.005), 
             const Text(
               "Our Mission",
               style: TextStyle(

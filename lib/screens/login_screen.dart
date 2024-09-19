@@ -65,6 +65,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Image.asset('assets/icons/timed.png',
+                    fit: BoxFit.cover,
+                    width: 190,
+                    height: 190,
+                  ),
                   RoundTextField(
                     textEditingController: _emailController,
                     hintText: "Email",

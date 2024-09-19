@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timed/screens/Report_screen.dart';
+import 'package:timed/screens/addMedicine/select_medicine.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/forAppointment/add_appointment.dart';
 import 'package:timed/widgets/forReminder/add_reminder.dart';
@@ -40,7 +41,7 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
                 leading: const Icon(Icons.home),
                 title: const Text('Home'),
                 onTap: () {
-                  addReminder(context, user!.uid);
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddMed()));
                 },
               ),
             ),
