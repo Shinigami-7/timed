@@ -50,7 +50,6 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
         selectedItemColor: AppColors.primaryColor2,
         onTap: (index) {
           if (index == 2) {
-            // PopupMenuWidget logic
           } else {
             setState(() {
               myIndex = index;

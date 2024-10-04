@@ -43,6 +43,22 @@ class _HomescreenState extends State<Homescreen> {
     return '${DateFormat('EEEE').format(now)}, ${DateFormat('d MMM').format(now)}';
   }
 
+  void scheduleNotificationsForIntakes(List<Map<String, dynamic>> intakes, String medicineName) {
+    for (var intake in intakes) {
+      Timestamp timestamp = intake['time'];
+      DateTime time = timestamp.toDate();
+      int dose = intake['dose'];
+
+      // Schedule a notification for this intake time
+      NotificationLogic.scheduleAlarm(
+        id: time.hashCode,  // Use a unique ID for each notification
+        title: 'Medication Reminder',
+        body: 'Time to take $medicineName ($dose mg)',
+        dateTime: time,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -66,19 +82,7 @@ class _HomescreenState extends State<Homescreen> {
                   ),
                 ),
               ),
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    "Reminder",
-                    style: TextStyle(
-                      color: AppColors.blackColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              const Spacer(),
+              
             ],
           ),
         ),
@@ -113,6 +117,9 @@ class _HomescreenState extends State<Homescreen> {
                       int frequency = doc['frequency'] ?? 0;
                       List<Map<String, dynamic>> intakes = List<Map<String, dynamic>>.from(doc['intakes'] ?? []);
 
+                      // Schedule notifications for each intake
+                      scheduleNotificationsForIntakes(intakes, medicineName);
+
                       return Card(
                         margin: const EdgeInsets.all(8),
                         child: Padding(
@@ -135,7 +142,7 @@ class _HomescreenState extends State<Homescreen> {
                                 DateTime time = timestamp.toDate();
                                 int dose = intake['dose'];
                                 return Text(
-                                  'Time: ${DateFormat.jm().format(time)}, Dose: $dose',
+                                  'Time: ${DateFormat.jm().format(time)}, Dose: $dose mg',
                                   style: const TextStyle(fontSize: 16),
                                 );
                               }),

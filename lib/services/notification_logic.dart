@@ -30,7 +30,6 @@ class NotificationLogic {
 
     final settings = const InitializationSettings(android: android);
 
-
     await _notifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (notificationResponse) {

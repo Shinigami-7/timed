@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timed/screens/login_screen.dart';
 import 'package:timed/screens/signup_screen.dart';
-import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 
 class LandingScreen extends StatelessWidget {

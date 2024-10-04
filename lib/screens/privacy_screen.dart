@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:timed/screens/profile_screen.dart';
 import 'package:timed/widgets/navigation_bar.dart';
 
 class PrivacyScreen extends StatelessWidget {
