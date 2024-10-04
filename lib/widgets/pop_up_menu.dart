@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:timed/screens/Report_screen.dart';
 import 'package:timed/screens/addMedicine/select_medicine.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/add_report.dart';
@@ -39,7 +38,7 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
             PopupMenuItem(
               child: ListTile(
                 leading: const Icon(Icons.home),
-                title: const Text('Home'),
+                title: const Text('Medicine'),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>AddMed()));
                 },
@@ -73,11 +72,11 @@ class _PopupMenuWidgetState extends State<PopupMenuWidget> {
         );
       },
       child: Container(
-        width: 60, // Adjust width as needed
-        height: 60, // Adjust height as needed
+        width: 60, 
+        height: 60, 
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: AppColors.primaryG, // Customize gradient colors
+            colors: AppColors.primaryG, 
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:timed/auth/auth_service.dart';
 import 'package:timed/screens/signup_screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
@@ -155,7 +156,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          AuthSrevice().signInWIthGoogle();
+                        },
                         child: Container(
                           height: 50,
                           width: 50,
