@@ -16,11 +16,11 @@ class MainNavigationBar extends StatefulWidget {
 class _MainNavigationBarState extends State<MainNavigationBar> {
   int myIndex = 0;
 
-  final List<Widget> widgetList = const [
-    Homescreen(),
-    AppointmentScreen(),
-    PopupMenuWidget(),
-    ReportScreen(),
+  final List<Widget> widgetList = [
+    const Homescreen(),
+    const AppointmentScreen(),
+    const PopupMenuWidget(),
+    const ReportScreen(),
     ProfileScreen(),
   ];
 

@@ -1,63 +1,35 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:timed/services/notification_logic.dart';
-import 'package:timed/widgets/navigation_bar.dart';
 
-class AuthSrevice{
+class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // Future<User?> _signIn(BuildContext context, String email, String password) async {
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-  //   try {
-  //     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     );
-  //     User? user = userCredential.user;
+      if (googleUser == null) {
+        return null; // The user canceled the sign-in
+      }
 
-  //     if (user != null) {
-  //       // Initialize notifications after user logs in successfully
-  //       await NotificationLogic.init(context, user.uid);
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Login Successful")),
-  //       );
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const MainNavigationBar()),
-  //       );
-  //     }
-
-  //     return user;
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Login Failed, Please check your email and password")),
-  //     );
-  //     return null;
-  //   }
-  // }
- 
-  signInWIthGoogle() async {
-    //begin interactive sign in process
-    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-
-    //user cancel
-    if(gUser == null) return;  
-
-    //obtain auth details from request
-    final GoogleSignInAuthentication gAuth = await gUser.authentication;
-
-    //create a new credential for user
-    final credential = GoogleAuthProvider.credential(
-      accessToken: gAuth.accessToken,
-      idToken: gAuth.accessToken,
-    );
-
-    //sign in
-    return await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 
-  
+  Future<void> signOut() async {
+    await _auth.signOut();
+    await _googleSignIn.signOut();
+  }
 }
