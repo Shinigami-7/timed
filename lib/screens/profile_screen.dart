@@ -1,12 +1,32 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:timed/services/logout_service.dart';
 import 'package:timed/screens/aboutus_screen.dart';
 import 'package:timed/screens/privacy_screen.dart';
 import 'package:timed/screens/setting_screen.dart';
 import 'package:timed/widgets/build_menu_button.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:timed/utils/pick_image.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+
+class ProfileScreen extends StatefulWidget {
+   ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Uint8List? _image;
+
+  void selectImage() async{
+    String? img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img as Uint8List?;
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +47,24 @@ class ProfileScreen extends StatelessWidget {
             ),
             SizedBox(height: media.height * 0.03),
             // Profile Picture
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.grey.shade200,
-              backgroundImage: const AssetImage('assets/icons/me.jpg'),
-              child: ClipOval(
-                child: Image.asset(
-                  "assets/icons/me.jpg",
-                  fit: BoxFit.cover,
-                  width: 190,
-                  height: 190,
+            Stack(
+              children: [
+                _image!= null? CircleAvatar(
+                  radius: 60,
+                  backgroundImage: MemoryImage(_image!),
+                ):
+                CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.grey.shade200,
+                  backgroundImage: NetworkImage("https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png"),
                 ),
-              ),
+                Positioned(
+                  child: IconButton(onPressed: selectImage, 
+                  icon: Icon(Icons.add_a_photo)),
+                  bottom: -10,
+                  left: 80,
+                )
+              ],
             ),
             SizedBox(height: media.height * 0.02),
             // Name
@@ -111,7 +137,4 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Function to show logout confirmation dialog
-  
 }
