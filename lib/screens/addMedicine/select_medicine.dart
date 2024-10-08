@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:timed/model/medicine_model.dart';
 import 'package:timed/screens/addMedicine/medicine_intake.dart';
 
 class AddMed extends StatefulWidget {
@@ -10,19 +13,6 @@ class AddMed extends StatefulWidget {
 
 class _AddMedState extends State<AddMed> {
   String? selectedMedication;
-
-  final List<String> medications = [
-    "Mylod 2.5",
-    "Mylod 5",
-    "Metformin",
-    "Aspirin",
-    "Ibuprofen",
-    "Paracetamol",
-    "Amoxicillin",
-    "Lisinopril",
-    "Metoprolol",
-    "Simvastatin",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -64,21 +54,41 @@ class _AddMedState extends State<AddMed> {
                           style: TextStyle(fontSize: 20),
                         ),
                         const Spacer(),
-                        DropdownButton<String>(
-                          hint: const Text("Select Medicine"),
-                          value: selectedMedication,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedMedication = newValue;
-                            });
-                          },
-                          items: medications.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
+                        StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection("medicine").snapshots(), 
+                          builder: (context,snapshot){
+                            List<DropdownMenuItem> medicineName = [];
+                            if(!snapshot.hasData){
+                              const CircularProgressIndicator();
+                            }
+                            else{
+                              final medName = snapshot.data?.docs.reversed.toList();
+                              medicineName.add(DropdownMenuItem(
+                                value: "0",
+                                child: Text("Select Medicine"),
+                                ));
+                              for(var medicine in medName!){
+                                medicineName.add(DropdownMenuItem(
+                                  value: medicine.id,
+                                  child: Text(medicine['name'],
+                                  )
+                                  )
+                                  );
+                              }
+                            }
+                            return DropdownButton(
+                              items: medicineName, 
+                              onChanged: (MedicationValue){
+                                setState(() {
+                                  selectedMedication = MedicationValue;
+                                });
+                              },
+                              value: selectedMedication,
+                              isExpanded: false,
+                              );
+                          }
+                        )
+                       
                       ],
                     ),
                   ),

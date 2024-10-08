@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:timed/auth/auth_service.dart';
 import 'package:timed/screens/signup_screen.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
 import 'package:timed/widgets/round_text_field.dart';
 import 'package:timed/services/notification_logic.dart';
-import 'package:timed/widgets/navigation_bar.dart'; // Ensure this import is correct
+import 'package:timed/widgets/navigation_bar.dart'; 
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,11 +16,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final  _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   bool _isObscure = true;
   final _formKey = GlobalKey<FormState>();
+  final _authh = AuthService();
 
   Future<User?> _signIn(BuildContext context, String email, String password) async {
     try {
@@ -151,12 +153,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: media.width * 0.05,
                   ),
+                 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          
+                        onTap: () async {
+                          await _authh.loginWithGoogle();
                         },
                         child: Container(
                           height: 50,
@@ -240,3 +243,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

@@ -45,6 +45,7 @@ dependencies:
   cloud_firestore: ^5.4.1
   firebase_auth: ^5.2.1
   firebase_storage: ^12.3.2
+  firebase_database: ^11.1.4
   firebase_core: ^3.4.1
   flutter_local_notifications: ^17.2.2
   permission_handler: ^11.3.1
