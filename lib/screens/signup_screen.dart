@@ -258,6 +258,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(
                     height: media.width * 0.1,
                   ),
+                  
                   Row(
                     children: [
                       Expanded(
@@ -306,30 +307,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 30,
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: AppColors.primaryColor1.withOpacity(0.5),
-                                width: 1,
-                              )),
-                          child: Image.asset(
-                            "assets/icons/facebook.png",
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                      )
+                      
+                      
                     ],
                   ),
+                  
                   SizedBox(
                     height: media.width * 0.05,
                   ),

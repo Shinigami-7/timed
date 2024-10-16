@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          await _authh.loginWithGoogle();
+                          await _authh.signInWithGoogle();
                         },
                         child: Container(
                           height: 50,
@@ -178,28 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 30,
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: AppColors.primaryColor1.withOpacity(0.5),
-                                width: 1,
-                              )),
-                          child: Image.asset(
-                            "assets/icons/facebook.png",
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                      )
+                     
                     ],
                   ),
                   SizedBox(height: media.width*0.03,),
@@ -243,4 +222,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

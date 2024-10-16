@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timed/screens/changepassword_screen.dart';
-// Assuming you have AppColors defined
+import 'package:timed/screens/notification_screen.dart';
 import 'package:timed/widgets/build_menu_button.dart';
 import 'package:timed/widgets/navigation_bar.dart';
 
@@ -14,38 +14,50 @@ class SettingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-              "Setting",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          "Setting",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Back icon
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Navigate back to the settings screen
             Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const MainNavigationBar(),
-              settings: const RouteSettings(arguments: 4),            
-              )
-            );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MainNavigationBar(),
+                  settings: const RouteSettings(arguments: 4),
+                ));
           },
         ),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
-          children: [             
+          children: [
             SizedBox(height: media.height * 0.005),
             // Buttons for different actions (using GradientButton widget from another file)
-            GradientButton(title: "Change Password", onPressed: () { Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
-    );}),
-            GradientButton(title: "Sounds and vibration", onPressed: () {}),
-            GradientButton(title: "Notification", onPressed: () {}),
+            GradientButton(
+                title: "Change Password",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ChangePasswordScreen()),
+                  );
+                }),
+            // GradientButton(title: "Sounds and vibration", onPressed: () {}),
+            GradientButton(
+                title: "Notification",
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NotificationPage()
+                      )
+                    );
+                }),
           ],
         ),
       ),
