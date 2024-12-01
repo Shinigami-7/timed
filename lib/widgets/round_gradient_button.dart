@@ -32,7 +32,7 @@ class RoundGradientButton extends StatelessWidget {
         ),
         child: MaterialButton(
           onPressed: onPressed,
-          minWidth: double.infinity,
+          minWidth: 150,
           height: 50,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
