@@ -28,11 +28,10 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Check if there are arguments passed to the screen
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is int) {
       setState(() {
-        myIndex = args; // Update the selected tab index if arguments are passed
+        myIndex = args; 
       });
     }
   }

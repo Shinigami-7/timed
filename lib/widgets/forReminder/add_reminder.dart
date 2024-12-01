@@ -7,7 +7,7 @@ import 'package:timed/utils/app_colors.dart';
 
 addReminder(BuildContext context, String uid) {
   TimeOfDay time = TimeOfDay.now();
-  String medicineName = ""; // Add a field for medicine name
+  String medicineName = ""; 
 
   add(String uid, TimeOfDay time, String medicineName) {
     try {
@@ -18,7 +18,7 @@ addReminder(BuildContext context, String uid) {
       ReminderModel reminderModel = ReminderModel(
         timeStamp: timestamp,
         onOff: false,
-        medicineName: medicineName, // Add medicine name here
+        medicineName: medicineName,
       );
 
       FirebaseFirestore.instance
@@ -28,7 +28,23 @@ addReminder(BuildContext context, String uid) {
           .doc()
           .set(reminderModel.toMap());
 
-      Fluttertoast.showToast(msg: 'Reminder Added');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Reminder Set'),
+            content: Text('Your alarm for $medicineName will ring at ${time.format(context)}.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -80,7 +96,7 @@ addReminder(BuildContext context, String uid) {
                   ),
                   TextField(
                     onChanged: (value) {
-                      medicineName = value; // Update medicine name
+                      medicineName = value;
                     },
                     decoration: const InputDecoration(
                       labelText: "Medicine Name",
@@ -99,7 +115,7 @@ addReminder(BuildContext context, String uid) {
               ),
               TextButton(
                 onPressed: () {
-                  add(uid, time, medicineName); // Pass medicine name
+                  add(uid, time, medicineName);
                   Navigator.pop(context);
                 },
                 child: const Text('ADD'),
