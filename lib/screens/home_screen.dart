@@ -242,7 +242,10 @@ class _HomescreenState extends State<Homescreen> {
                                     fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
-
+                              Text(
+                                'Frequency: $frequency times daily',
+                                style: const TextStyle(fontSize: 16),
+                              ),
                               const SizedBox(height: 8),
                               ...intakes.map((intake) {
                                 Timestamp timestamp = intake['time'];
@@ -259,47 +262,26 @@ class _HomescreenState extends State<Homescreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            Row(
-                                              children: [
-                                                Stack(
-                                                  alignment: Alignment.center, // Center the text within the circle
-                                                  children: [
-                                                    CircularProgressIndicator(
-                                                      value: dose >= 20 ? 1.0 : dose / 20.0,
-                                                      backgroundColor: Colors.grey[200],
-                                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                                        dose >= 12
-                                                            ? Colors.green
-                                                            : dose <= 11 && dose >= 6
-                                                            ? Colors.orange
-                                                            : Colors.red,
-                                                      ),
-                                                      strokeWidth: 5,
-                                                    ),
-                                                    Text(
-                                                      '$dose', // Display the dose value
-                                                      style: const TextStyle(
-                                                        fontSize: 14, // Adjust font size as needed
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.black, // Text color
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(width: 16),
-                                                Text(
-                                                  'Frequency: $frequency times daily',
-                                                  style: const TextStyle(fontSize: 16),
-                                                ),
-                                              ],
+                                            CircularProgressIndicator(
+                                              value: dose >= 20
+                                                  ? 1.0
+                                                  : dose / 20.0,
+                                              backgroundColor:
+                                              Colors.grey[200],
+                                              valueColor:
+                                              AlwaysStoppedAnimation<Color>(dose >= 12
+                                                  ? Colors.green
+                                                  : dose <= 11 && dose >= 6
+                                                  ? Colors.orange
+                                                  : Colors.red),
+                                              strokeWidth: 5,
                                             ),
-
                                             const SizedBox(width: 16),
-                                            // Text(
-                                            //   'Quantity: $dose',
-                                            //   style: const TextStyle(
-                                            //       fontSize: 16),
-                                            // ),
+                                            Text(
+                                              'Dose: $dose mg',
+                                              style: const TextStyle(
+                                                  fontSize: 16),
+                                            ),
                                           ],
                                         ),
 
@@ -307,9 +289,7 @@ class _HomescreenState extends State<Homescreen> {
                                         Text(
                                           DateFormat.jm().format(time), // Format the time as 'h:mm AM/PM'
                                           style: const TextStyle(
-                                              fontSize: 22,
-                                            fontWeight: FontWeight.bold
-                                          ),
+                                              fontSize: 16),
                                         ),
                                       ],
                                     ),

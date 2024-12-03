@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:timed/screens/myDetail.dart';
 import 'package:timed/services/logout_service.dart';
 import 'package:timed/screens/aboutus_screen.dart';
 import 'package:timed/screens/privacy_screen.dart';
@@ -123,10 +124,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                 
+                 */
                   SizedBox(height: media.height * 0.03),
-                  GradientButton(title: "My Medicines", onPressed: () {}),
-                   */
+                  GradientButton(title: "My Detail", onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyDetail()));
+                  }),
+
                   GradientButton(
                       title: "Settings",
                       onPressed: () {
