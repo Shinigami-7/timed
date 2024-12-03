@@ -48,12 +48,15 @@ class _HomescreenState extends State<Homescreen> {
     return '${DateFormat('EEEE').format(now)}, ${DateFormat('d MMM').format(now)}';
   }
 
+  // Inside the Homescreen class
+
   void scheduleNotificationsForIntakes(
       List<Map<String, dynamic>> intakes, String medicineName) {
     for (var intake in intakes) {
       Timestamp timestamp = intake['time'];
       DateTime time = timestamp.toDate();
       int dose = intake['dose'];
+      String reminderId = intake['id'] ?? time.hashCode.toString();  // Add a unique reminder ID
 
       // Schedule a notification for this intake time
       NotificationLogic.scheduleAlarm(
@@ -61,9 +64,11 @@ class _HomescreenState extends State<Homescreen> {
         title: 'Medication Reminder',
         body: 'Time to take $medicineName ($dose mg)',
         dateTime: time,
+        reminderId: reminderId, // Pass the reminderId to the scheduleAlarm method
       );
     }
   }
+
 
   void handleTakeButton(String docId, Map<String, dynamic> intake) async {
     try {
@@ -241,11 +246,7 @@ class _HomescreenState extends State<Homescreen> {
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Frequency: $frequency times daily',
-                                style: const TextStyle(fontSize: 16),
-                              ),
+
                               const SizedBox(height: 8),
                               ...intakes.map((intake) {
                                 Timestamp timestamp = intake['time'];
@@ -262,26 +263,43 @@ class _HomescreenState extends State<Homescreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            CircularProgressIndicator(
-                                              value: dose >= 20
-                                                  ? 1.0
-                                                  : dose / 20.0,
-                                              backgroundColor:
-                                              Colors.grey[200],
-                                              valueColor:
-                                              AlwaysStoppedAnimation<Color>(dose >= 12
-                                                  ? Colors.green
-                                                  : dose <= 11 && dose >= 6
-                                                  ? Colors.orange
-                                                  : Colors.red),
-                                              strokeWidth: 5,
+                                            Row(
+                                              children: [
+                                                Stack(
+                                                  alignment: Alignment.center, // Center the text within the circle
+                                                  children: [
+                                                    CircularProgressIndicator(
+                                                      value: dose >= 20 ? 1.0 : dose / 20.0,
+                                                      backgroundColor: Colors.grey[200],
+                                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                                        dose >= 12
+                                                            ? Colors.green
+                                                            : dose <= 11 && dose >= 6
+                                                            ? Colors.orange
+                                                            : Colors.red,
+                                                      ),
+                                                      strokeWidth: 5,
+                                                    ),
+                                                    Text(
+                                                      '$dose', // Display the dose value
+                                                      style: const TextStyle(
+                                                        fontSize: 14, // Adjust font size as needed
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.black, // Text color
+                                                      ),
+                                                    ),
+
+                                                  ],
+                                                ),
+                                                SizedBox(width: 10,),
+                                                Text(
+                                                  'Frequency: $frequency times daily',
+                                                  style: const TextStyle(fontSize: 16),
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(width: 16),
-                                            Text(
-                                              'Dose: $dose mg',
-                                              style: const TextStyle(
-                                                  fontSize: 16),
-                                            ),
+
+
                                           ],
                                         ),
 
