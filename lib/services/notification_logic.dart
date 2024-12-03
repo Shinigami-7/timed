@@ -62,6 +62,7 @@ class NotificationLogic {
 
   // Method to schedule alarms
   static Future<void> scheduleAlarm({
+    required String reminderId,
     required int id,
     required String title,
     required String body,

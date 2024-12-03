@@ -162,7 +162,7 @@ class _AddMed3State extends State<AddMed3_1> {
                 padding: const EdgeInsets.only(right: 25),
                 child: Row(
                   children: [
-                    const Text("Dose"),
+                    const Text("Quantity"),
                     const SizedBox(width: 8),
                     SizedBox(
                       width: 50,
