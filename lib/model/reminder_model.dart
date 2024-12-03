@@ -3,16 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ReminderModel {
   Timestamp? timeStamp;
   bool? onOff;
-  String? medicineName; // Add medicine name field
+  String? medicineName;
+  int? dose; // Added field to track the dose
 
-  ReminderModel({this.timeStamp, this.onOff, this.medicineName});
+  ReminderModel({this.timeStamp, this.onOff, this.medicineName, this.dose});
 
   // Convert ReminderModel to Map
   Map<String, dynamic> toMap() {
     return {
       'time': timeStamp,
       'onOff': onOff,
-      'medicineName': medicineName, // Include medicine name in map
+      'medicineName': medicineName,
+      'dose': dose, // Include dose in map
     };
   }
 
@@ -21,7 +23,8 @@ class ReminderModel {
     return ReminderModel(
       timeStamp: map['time'] as Timestamp?,
       onOff: map['onOff'] as bool?,
-      medicineName: map['medicineName'] as String?, // Read medicine name from map
+      medicineName: map['medicineName'] as String?,
+      dose: map['dose'] as int?, // Read dose from map
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -9,7 +9,7 @@ class NotificationLogic {
   static final _notifications = FlutterLocalNotificationsPlugin();
   static final onNotifications = BehaviorSubject<String?>();
 
-  // Method to request notification permissions
+  // Request notification permissions
   static Future<void> requestNotificationPermissions() async {
     var status = await Permission.notification.status;
     if (status != PermissionStatus.granted) {
@@ -24,25 +24,16 @@ class NotificationLogic {
     }
   }
 
-  // Initialization settings for the notifications
+  // Initialize notifications
   static Future<void> _initializeNotifications() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-
     final settings = const InitializationSettings(android: android);
 
     await _notifications.initialize(
       settings,
-      onDidReceiveNotificationResponse: (notificationResponse) {
-        // Handle notification tap or action click here
-        if (notificationResponse.actionId == 'take_action') {
-          print('Take button clicked!');
-          // Logic for "Take" action
-        } else if (notificationResponse.actionId == 'skip_action') {
-          print('Skip button clicked!');
-          // Logic for "Skip" action
-        } else {
-          print('Notification tapped');
-        }
+      onDidReceiveNotificationResponse: (notificationResponse) async {
+        // Handle notification tap
+        print('Notification tapped');
         onNotifications.add(notificationResponse.payload);
       },
     );
@@ -55,7 +46,7 @@ class NotificationLogic {
     await requestNotificationPermissions();
   }
 
-  // Method to configure notification details with actions
+  // Method to configure notification details
   static Future<NotificationDetails> _notificationDetails() async {
     const androidDetails = AndroidNotificationDetails(
       "reminder_channel_id",
@@ -64,16 +55,6 @@ class NotificationLogic {
       priority: Priority.max,
       playSound: true,
       enableVibration: true,
-      actions: [
-        AndroidNotificationAction(
-          'take_action',
-          '✅ Take', // Text label with a checkmark (use an emoji for an icon-like appearance)
-        ),
-        AndroidNotificationAction(
-          'skip_action',
-          '❌ Skip', // Text label with a cross mark (use an emoji for an icon-like appearance)
-        ),
-      ],
     );
 
     return const NotificationDetails(android: androidDetails);
