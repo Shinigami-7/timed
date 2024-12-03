@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:timed/screens/add_prescription.dart';
+import 'package:timed/screens/addMedicine/add_prescription.dart';
 
 class AddMed3_1 extends StatefulWidget {
   final String medication;
