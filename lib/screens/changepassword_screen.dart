@@ -20,6 +20,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _isObscure = true; // To toggle password visibility
+  bool _isObscure2 = true; // To toggle password visibility
+  bool _isObscure3 = true; // To toggle password visibility
+
+
 
   Future<void> _changePassword() async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -28,6 +32,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User not logged in')),
+        );
+        return;
+      }
+
+      // Check if the new password is the same as the current password
+      if (_currentPasswordController.text == _newPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('New password cannot be the same as current password')),
         );
         return;
       }
@@ -60,11 +72,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       } on FirebaseAuthException catch (e) {
         if (e.code == 'wrong-password') {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('password is incorrect')),
+            const SnackBar(content: Text('Current password is incorrect')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Current password is incorrect')),
+            SnackBar(content: Text('Error: ${e.message}')),
           );
         }
       } catch (e) {
@@ -138,17 +150,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       const SizedBox(height: 10),
                       TextFormField(
                         controller: _newPasswordController,
-                        obscureText: _isObscure, // Hide or show text
+                        obscureText: _isObscure2, // Hide or show text
                         decoration: InputDecoration(
                           labelText: 'New Password',
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isObscure ? Icons.visibility : Icons.visibility_off,
+                              _isObscure2 ? Icons.visibility : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
-                                _isObscure = !_isObscure; // Toggle visibility
+                                _isObscure2 = !_isObscure2; // Toggle visibility
                               });
                             },
                           ),
@@ -171,17 +183,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       const SizedBox(height: 10),
                       TextFormField(
                         controller: _confirmPasswordController,
-                        obscureText: _isObscure, // Hide or show text
+                        obscureText: _isObscure3, // Hide or show text
                         decoration: InputDecoration(
                           labelText: 'Confirm Password',
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isObscure ? Icons.visibility : Icons.visibility_off,
+                              _isObscure3 ? Icons.visibility : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
-                                _isObscure = !_isObscure; // Toggle visibility
+                                _isObscure3 = !_isObscure3; // Toggle visibility
                               });
                             },
                           ),

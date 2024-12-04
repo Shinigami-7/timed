@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:timed/screens/myDetail.dart';
 import 'package:timed/services/logout_service.dart';
 import 'package:timed/screens/aboutus_screen.dart';
 import 'package:timed/screens/privacy_screen.dart';
@@ -104,31 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  /*
-                  SizedBox(height: media.height * 0.01),
-                  const Text(
-                    "Male(21)",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  SizedBox(height: media.height * 0.005),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Edit Info",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                 */
+                  
                   SizedBox(height: media.height * 0.03),
-                  GradientButton(title: "My Detail", onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyDetail()));
-                  }),
+                  
 
                   GradientButton(
                       title: "Settings",

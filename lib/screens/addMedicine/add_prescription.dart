@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:timed/widgets/navigation_bar.dart';
 
 class UploadPrescriptionScreen extends StatefulWidget {
   @override
@@ -134,33 +135,47 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
                 const SizedBox(height: 20),
                 _image != null
                     ? (kIsWeb
-                    ? Image.memory(
-                  _image as Uint8List,
-                  height: screenSize.height * 0.4,
-                  fit: BoxFit.cover,
-                )
-                    : Image.file(
-                  _image as File,
-                  height: screenSize.height * 0.4,
-                  fit: BoxFit.cover,
-                ))
+                        ? Image.memory(
+                            _image as Uint8List,
+                            height: screenSize.height * 0.4,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            _image as File,
+                            height: screenSize.height * 0.4,
+                            fit: BoxFit.cover,
+                          ))
                     : const Text(
-                  'No image selected',
-                  style: TextStyle(color: Colors.grey),
-                ),
+                        'No image selected',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                 const SizedBox(height: 20),
                 _isUploading
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
-                  onPressed: _uploadImage,
-                  child: const Text('Upload Image'),
-                ),
+                        onPressed: _uploadImage,
+                        child: const Text('Upload Image'),
+                      ),
                 const SizedBox(height: 20),
                 if (_downloadUrl != null)
                   SelectableText(
                     'Download URL: $_downloadUrl',
                     style: const TextStyle(color: Colors.blue),
                   ),
+                const SizedBox(height: 20),
+                // Add the Done button here
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to the home screen
+                    Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MainNavigationBar(),
+                                  settings: RouteSettings(arguments: 0)));
+                    
+                  },
+                  child: const Text('Done'),
+                ),
               ],
             ),
           ),
