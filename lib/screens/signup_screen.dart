@@ -27,6 +27,8 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isCheck = false;
   final _formKey = GlobalKey<FormState>();
 
+  bool _isPasswordStrong = false;
+
   Future<void> _signUp(BuildContext context, String email, String password) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -79,6 +81,11 @@ class _SignupScreenState extends State<SignupScreen> {
     return emailRegex.hasMatch(email);
   }
 
+  bool isPasswordStrong(String password) {
+    return RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        .hasMatch(password);
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -88,40 +95,28 @@ class _SignupScreenState extends State<SignupScreen> {
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-            
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
-                   Image.asset('assets/icons/timed.png',
+                  Image.asset(
+                    'assets/icons/timed.png',
                     fit: BoxFit.contain,
-                    width: media.width*0.7,
-                    height: media.height*0.2,
+                    width: media.width * 0.7,
+                    height: media.height * 0.2,
                   ),
-                  SizedBox(
-                    width: media.width,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: media.height * 0.03,
-                        ),
-                        const Text(
-                          "Create an Account",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: AppColors.blackColor,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      ],
+                  SizedBox(height: media.height * 0.03),
+                  const Text(
+                    "Create an Account",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.blackColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(
-                    height: media.width * 0.02,
-                  ),
+                  SizedBox(height: media.width * 0.02),
                   RoundTextField(
                     textEditingController: _fullnameController,
                     hintText: "Full Name",
@@ -134,9 +129,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       return null;
                     },
                   ),
-                  SizedBox(
-                    height: media.width * 0.02,
-                  ),
+                  SizedBox(height: media.width * 0.02),
                   RoundTextField(
                     textEditingController: _emailController,
                     hintText: "Email",
@@ -151,9 +144,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       return null;
                     },
                   ),
-                  SizedBox(
-                    height: media.width * 0.02,
-                  ),
+                  SizedBox(height: media.width * 0.02),
+                  // Password Field
                   RoundTextField(
                     textEditingController: _passController,
                     hintText: "Password",
@@ -163,8 +155,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your Password";
-                      } else if (value.length < 6) {
-                        return "Password must be at least 6 characters long";
+                      } else if (!isPasswordStrong(value)) {
+                        return "Weak password, please enter a strong password";
                       }
                       return null;
                     },
@@ -174,32 +166,29 @@ class _SignupScreenState extends State<SignupScreen> {
                           _isObscurepass = !_isObscurepass;
                         });
                       },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 20,
-                        width: 20,
-                        child: Icon(_isObscurepass
-                            ? Icons.visibility
-                            : Icons.visibility_off),
+                      child: Icon(
+                        _isObscurepass ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: media.width * 0.02,
-                  ),
+                  SizedBox(height: media.width * 0.02),
+
+// Confirm Password Field
                   RoundTextField(
                     textEditingController: _confirmPassController,
                     hintText: "Confirm Password",
                     icon: Icons.lock,
                     textInputType: TextInputType.text,
                     isObscureText: _isObscureconfirm,
+                    // enabled: isPasswordStrong(_passController.text), // Disable if password is weak
                     validator: (value) {
+                      if (!isPasswordStrong(_passController.text)) {
+                        return "Please enter a strong password first.";
+                      }
                       if (value == null || value.isEmpty) {
-                        return "Please enter your Password";
+                        return "Please confirm your Password";
                       } else if (value != _passController.text) {
                         return "Passwords don't match";
-                      } else if (value.length < 6) {
-                        return "Password must be at least 6 characters long";
                       }
                       return null;
                     },
@@ -209,82 +198,82 @@ class _SignupScreenState extends State<SignupScreen> {
                           _isObscureconfirm = !_isObscureconfirm;
                         });
                       },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 20,
-                        width: 20,
-                        child: Icon(_isObscureconfirm
-                            ? Icons.visibility
-                            : Icons.visibility_off),
+                      child: Icon(
+                        _isObscureconfirm ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
                   ),
+
+
                   SizedBox(height: media.width * 0.02),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isCheck = !_isCheck;
-                            });
-                          },
-                          icon: Icon(_isCheck
+                        onPressed: () {
+                          setState(() {
+                            _isCheck = !_isCheck;
+                          });
+                        },
+                        icon: Icon(
+                          _isCheck
                               ? Icons.check_box_outlined
-                              : Icons.check_box_outline_blank)),
+                              : Icons.check_box_outline_blank,
+                        ),
+                      ),
                       const Expanded(
                         child: Text(
-                            "By continuing you accept our Privacy Policy and Terms of Use"),
+                          "By continuing you accept our Privacy Policy and Terms of Use",
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: media.width * 0.1,
-                  ),
+                  SizedBox(height: media.width * 0.1),
                   RoundGradientButton(
                     title: "Create Account",
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         if (_isCheck) {
-                          _signUp(context, _emailController.text, _passController.text);
+                          _signUp(context, _emailController.text,
+                              _passController.text);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please accept the Terms and Conditions")),
+                            const SnackBar(
+                                content: Text(
+                                    "Please accept the Terms and Conditions")),
                           );
                         }
                       }
                     },
                   ),
-                  SizedBox(
-                    height: media.width * 0.1,
-                  ),
-                  
+                  SizedBox(height: media.width * 0.1),
                   Row(
                     children: [
                       Expanded(
-                          child: Container(
-                        width: double.infinity,
-                        height: 1,
-                        color: AppColors.grayColor.withOpacity(0.5),
-                      )),
+                        child: Container(
+                          width: double.infinity,
+                          height: 1,
+                          color: AppColors.grayColor.withOpacity(0.5),
+                        ),
+                      ),
                       const Text(
                         " Or ",
                         style: TextStyle(
-                            color: AppColors.grayColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400),
+                          color: AppColors.grayColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       Expanded(
-                          child: Container(
-                        width: double.infinity,
-                        height: 1,
-                        color: AppColors.grayColor.withOpacity(0.5),
-                      )),
+                        child: Container(
+                          width: double.infinity,
+                          height: 1,
+                          color: AppColors.grayColor.withOpacity(0.5),
+                        ),
+                      ),
                     ],
                   ),
-                  SizedBox(
-                    width: media.width * 0.05,
-                  ),
+                  SizedBox(height: media.width * 0.05),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -295,11 +284,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           width: 50,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: AppColors.primaryColor1.withOpacity(0.5),
-                                width: 1,
-                              )),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.primaryColor1.withOpacity(0.5),
+                              width: 1,
+                            ),
+                          ),
                           child: Image.asset(
                             "assets/icons/google.png",
                             height: 20,
@@ -307,23 +297,18 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                       ),
-                      
-                      
                     ],
                   ),
-                  
-                  SizedBox(
-                    height: media.width * 0.05,
-                  ),
+                  SizedBox(height: media.width * 0.05),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
                       );
                     },
                     child: RichText(
-                      textAlign: TextAlign.center,
                       text: const TextSpan(
                         style: TextStyle(
                           color: AppColors.blackColor,
@@ -335,9 +320,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           TextSpan(
                             text: "Login",
                             style: TextStyle(
-                              color: AppColors.secondaryColor1,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryColor1,
                             ),
                           ),
                         ],

@@ -14,11 +14,10 @@ class Homescreen extends StatefulWidget {
 
 class _HomescreenState extends State<Homescreen> {
   User? user;
-  String? tappedContainerId; // Store the ID of the tapped container
-  TextEditingController quantityController =
-  TextEditingController(); // Controller for the input
-  String? selectedDocId; // Store the selected document ID for adding quantity
-  bool isAddButtonVisible = true; // Flag to control visibility of the first "Add" button
+  String? tappedContainerId;
+  TextEditingController quantityController = TextEditingController();
+  String? selectedDocId;
+  bool isAddButtonVisible = true;
 
   @override
   void initState() {
@@ -32,11 +31,17 @@ class _HomescreenState extends State<Homescreen> {
 
   void listenNotification() {
     NotificationLogic.onNotifications.listen((payload) {
-      onClickedNotifications(payload);
+      if (payload != null) {
+        print("Notification payload: $payload");
+        onClickedNotifications(payload);
+      } else {
+        print("No payload received from notification.");
+      }
     });
   }
 
   void onClickedNotifications(String? payload) {
+    // Navigate or handle the notification click
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const Homescreen()),
@@ -48,53 +53,43 @@ class _HomescreenState extends State<Homescreen> {
     return '${DateFormat('EEEE').format(now)}, ${DateFormat('d MMM').format(now)}';
   }
 
-  // Inside the Homescreen class
-
   void scheduleNotificationsForIntakes(
-      List<Map<String, dynamic>> intakes, String medicineName) {
+      List<Map<String, dynamic>> intakes, String medicineName, String medicationId) {
     for (var intake in intakes) {
       Timestamp timestamp = intake['time'];
       DateTime time = timestamp.toDate();
       int dose = intake['dose'];
-      String reminderId = intake['id'] ?? time.hashCode.toString();  // Add a unique reminder ID
 
-      // Schedule a notification for this intake time
       NotificationLogic.scheduleAlarm(
-        id: time.hashCode, // Use a unique ID for each notification
+        uid: user!.uid,
+        id: time.hashCode,
         title: 'Medication Reminder',
         body: 'Time to take $medicineName ($dose mg)',
         dateTime: time,
-        reminderId: reminderId, // Pass the reminderId to the scheduleAlarm method
+        medicationId: medicationId,
       );
     }
   }
 
-
-  void handleTakeButton(String docId, Map<String, dynamic> intake) async {
+  Future<void> handleTakeButton(String docId, Map<String, dynamic> intake) async {
     try {
-      final int currentDose = intake['dose'] ?? 0; // Get the current dose
+      final int currentDose = intake['dose'] ?? 0;
       if (currentDose > 0) {
-        // Reduce the dose by 1
         final updatedDose = currentDose - 1;
 
-        final user = FirebaseAuth.instance.currentUser;
-        if (user == null) return;
-
-        // Update the specific intake dose in Firestore
         await FirebaseFirestore.instance
             .collection("user")
-            .doc(user.uid)
+            .doc(user!.uid)
             .collection("medications")
             .doc(docId)
             .update({
-          "intakes": FieldValue.arrayRemove([intake]), // Remove the old intake
+          "intakes": FieldValue.arrayRemove([intake]),
         });
 
-        // Add the updated intake back with the reduced dose
         final updatedIntake = {...intake, "dose": updatedDose};
         await FirebaseFirestore.instance
             .collection("user")
-            .doc(user.uid)
+            .doc(user!.uid)
             .collection("medications")
             .doc(docId)
             .update({
@@ -102,7 +97,7 @@ class _HomescreenState extends State<Homescreen> {
         });
 
         print("Dose reduced by 1");
-        setState(() {}); // Refresh UI
+        setState(() {});
       } else {
         print("Dose is already 0, cannot reduce further.");
       }
@@ -111,30 +106,26 @@ class _HomescreenState extends State<Homescreen> {
     }
   }
 
-  void handleAddQuantityButton(String docId, Map<String, dynamic> intake) async {
+  Future<void> handleAddQuantityButton(String docId, Map<String, dynamic> intake) async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
-
       final quantity = int.tryParse(quantityController.text) ?? 0;
       if (quantity > 0) {
         final currentDose = intake['dose'] ?? 0;
         final updatedDose = currentDose + quantity;
 
-        // Update the intake with the new dose
         await FirebaseFirestore.instance
             .collection("user")
-            .doc(user.uid)
+            .doc(user!.uid)
             .collection("medications")
             .doc(docId)
             .update({
-          "intakes": FieldValue.arrayRemove([intake]), // Remove the old intake
+          "intakes": FieldValue.arrayRemove([intake]),
         });
 
         final updatedIntake = {...intake, "dose": updatedDose};
         await FirebaseFirestore.instance
             .collection("user")
-            .doc(user.uid)
+            .doc(user!.uid)
             .collection("medications")
             .doc(docId)
             .update({
@@ -142,8 +133,8 @@ class _HomescreenState extends State<Homescreen> {
         });
 
         setState(() {
-          quantityController.clear(); // Clear the TextField after adding
-          isAddButtonVisible = true; // Reset the visibility for the "Add" button
+          quantityController.clear();
+          isAddButtonVisible = true;
         });
 
         print("Dose increased by $quantity");
@@ -189,14 +180,10 @@ class _HomescreenState extends State<Homescreen> {
               .doc(user!.uid)
               .collection('medications')
               .snapshots(),
-          builder: (BuildContext context,
-              AsyncSnapshot<QuerySnapshot> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(
-                  valueColor:
-                  AlwaysStoppedAnimation<Color>(Color(0xFF4FA8C5)),
-                ),
+                child: CircularProgressIndicator(),
               );
             }
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -210,16 +197,12 @@ class _HomescreenState extends State<Homescreen> {
               itemBuilder: (context, index) {
                 final doc = data!.docs[index];
                 final docData = doc.data() as Map<String, dynamic>;
-
-                String medicineName =
-                    docData['medicineName'] ?? 'No medicine name';
+                String medicineName = docData['medicineName'] ?? 'No medicine name';
                 int frequency = docData['frequency'] ?? 0;
                 List<Map<String, dynamic>> intakes =
-                List<Map<String, dynamic>>.from(
-                    docData['intakes'] ?? []);
+                List<Map<String, dynamic>>.from(docData['intakes'] ?? []);
 
-                // Schedule notifications for each intake
-                scheduleNotificationsForIntakes(intakes, medicineName);
+                scheduleNotificationsForIntakes(intakes, medicineName, doc.id);
 
                 return Card(
                   margin: const EdgeInsets.all(8),
@@ -232,9 +215,7 @@ class _HomescreenState extends State<Homescreen> {
                           onTap: () {
                             setState(() {
                               tappedContainerId =
-                              doc.id == tappedContainerId
-                                  ? null
-                                  : doc.id;
+                              doc.id == tappedContainerId ? null : doc.id;
                             });
                           },
                           child: Column(
@@ -243,10 +224,8 @@ class _HomescreenState extends State<Homescreen> {
                               Text(
                                 medicineName,
                                 style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
+                                    fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-
                               const SizedBox(height: 8),
                               ...intakes.map((intake) {
                                 Timestamp timestamp = intake['time'];
@@ -254,60 +233,50 @@ class _HomescreenState extends State<Homescreen> {
                                 int dose = intake['dose'];
 
                                 return Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween, // Ensures elements are spaced apart
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Row(
                                           children: [
-                                            Row(
+                                            Stack(
+                                              alignment: Alignment.center, // Center the text within the circle
                                               children: [
-                                                Stack(
-                                                  alignment: Alignment.center, // Center the text within the circle
-                                                  children: [
-                                                    CircularProgressIndicator(
-                                                      value: dose >= 20 ? 1.0 : dose / 20.0,
-                                                      backgroundColor: Colors.grey[200],
-                                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                                        dose >= 12
-                                                            ? Colors.green
-                                                            : dose <= 11 && dose >= 6
-                                                            ? Colors.orange
-                                                            : Colors.red,
-                                                      ),
-                                                      strokeWidth: 5,
-                                                    ),
-                                                    Text(
-                                                      '$dose', // Display the dose value
-                                                      style: const TextStyle(
-                                                        fontSize: 14, // Adjust font size as needed
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.black, // Text color
-                                                      ),
-                                                    ),
-
-                                                  ],
+                                                CircularProgressIndicator(
+                                                  value: dose >= 20 ? 1.0 : dose / 20.0,
+                                                  backgroundColor: Colors.grey[200],
+                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                    dose >= 12
+                                                        ? Colors.green
+                                                        : dose <= 11 && dose >= 6
+                                                        ? Colors.orange
+                                                        : Colors.red,
+                                                  ),
+                                                  strokeWidth: 5,
                                                 ),
-                                                SizedBox(width: 10,),
                                                 Text(
-                                                  'Frequency: $frequency times daily',
-                                                  style: const TextStyle(fontSize: 16),
+                                                  '$dose', // Display the dose value
+                                                  style: const TextStyle(
+                                                    fontSize: 14, // Adjust font size as needed
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black, // Text color
+                                                  ),
                                                 ),
+
                                               ],
                                             ),
-
-
+                                            SizedBox(width: 10,),
+                                            Text(
+                                              'Frequency: $frequency times daily',
+                                              style: const TextStyle(fontSize: 16),
+                                            ),
                                           ],
                                         ),
 
-                                        // Right side of the Row: Time display
                                         Text(
-                                          DateFormat.jm().format(time), // Format the time as 'h:mm AM/PM'
-                                          style: const TextStyle(
-                                              fontSize: 16),
+                                          DateFormat.jm().format(time),
+                                          style: const TextStyle(fontSize: 16),
                                         ),
                                       ],
                                     ),
@@ -316,14 +285,8 @@ class _HomescreenState extends State<Homescreen> {
                                       Row(
                                         children: [
                                           ElevatedButton(
-                                            onPressed: () =>
-                                                handleTakeButton(
-                                                    doc.id, intake),
-                                            style:
-                                            ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                              AppColors.primaryColor1,
-                                            ),
+                                            onPressed: () => handleTakeButton(
+                                                doc.id, intake),
                                             child: const Text("Take"),
                                           ),
                                           const SizedBox(width: 8),
@@ -332,51 +295,31 @@ class _HomescreenState extends State<Homescreen> {
                                               onPressed: () {
                                                 setState(() {
                                                   selectedDocId = doc.id;
-                                                  isAddButtonVisible =
-                                                  false;
+                                                  isAddButtonVisible = false;
                                                 });
                                               },
-                                              style:
-                                              ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                AppColors.primaryColor1,
-                                              ),
                                               child: const Text("Add"),
                                             ),
                                           if (!isAddButtonVisible)
                                             Padding(
-                                              padding:
-                                              const EdgeInsets.only(left: 8),
+                                              padding: const EdgeInsets.only(left: 8),
                                               child: Row(
                                                 children: [
                                                   Container(
                                                     width: 100,
                                                     child: TextField(
-                                                      controller:
-                                                      quantityController,
-                                                      keyboardType:
-                                                      TextInputType
-                                                          .number,
-                                                      decoration:
-                                                      const InputDecoration(
-                                                        hintText:
-                                                        "Add Quantity",
+                                                      controller: quantityController,
+                                                      keyboardType: TextInputType.number,
+                                                      decoration: const InputDecoration(
+                                                        hintText: "Quantity",
                                                       ),
                                                     ),
                                                   ),
                                                   ElevatedButton(
                                                     onPressed: () =>
                                                         handleAddQuantityButton(
-                                                            doc.id,
-                                                            intake),
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      backgroundColor:
-                                                      AppColors
-                                                          .primaryColor1,
-                                                    ),
-                                                    child:
-                                                    const Text("Add"),
+                                                            doc.id, intake),
+                                                    child: const Text("Add"),
                                                   ),
                                                 ],
                                               ),
