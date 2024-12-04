@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationLogic {
   static final _notifications = FlutterLocalNotificationsPlugin();
@@ -27,26 +28,83 @@ class NotificationLogic {
   // Initialize notifications
   static Future<void> _initializeNotifications() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+
     final settings = const InitializationSettings(android: android);
 
     await _notifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (notificationResponse) async {
-        // Handle notification tap
-        print('Notification tapped');
-        onNotifications.add(notificationResponse.payload);
+        final payload = notificationResponse.payload;
+
+        if (notificationResponse.actionId == 'take_action') {
+          print('Take button clicked!');
+          if (payload != null) {
+            print('Received payload: $payload');
+            await _reduceDoseInFirestore(payload);
+          }
+        } else if (notificationResponse.actionId == 'skip_action') {
+          print('Skip button clicked!');
+        } else {
+          print('Notification tapped');
+        }
+        onNotifications.add(payload);
       },
     );
   }
 
-  // Initialization of the notification logic
+  // Reduce dose in Firestore
+  static Future<void> _reduceDoseInFirestore(String payload) async {
+    try {
+      if (payload == null || payload.isEmpty) {
+        print('Invalid payload received');
+        return;
+      }
+
+      final data = payload.split('|');
+      if (data.length != 3) {
+        print('Payload format incorrect');
+        return;
+      }
+
+      final uid = data[0];
+      final medicationId = data[1];
+      final intakeTime = data[2];
+
+      final medicationRef = FirebaseFirestore.instance
+          .collection('user')
+          .doc(uid)
+          .collection('medications')
+          .doc(medicationId);
+
+      final snapshot = await medicationRef.get();
+      if (snapshot.exists) {
+        final medicationData = snapshot.data()!;
+        final intakes = List<Map<String, dynamic>>.from(medicationData['intakes']);
+
+        for (var intake in intakes) {
+          if (intake['time'] == intakeTime) {
+            intake['dose'] = (intake['dose'] as int) - 1;
+          }
+        }
+
+        await medicationRef.update({'intakes': intakes});
+        print('Dose reduced successfully in Firestore.');
+      } else {
+        print('Medication not found in Firestore');
+      }
+    } catch (e) {
+      print('Error reducing dose: $e');
+    }
+  }
+
+  // Initialize NotificationLogic
   static Future<void> init(BuildContext context, String uid) async {
     tz.initializeTimeZones();
     await _initializeNotifications();
     await requestNotificationPermissions();
   }
 
-  // Method to configure notification details
+  // Notification details with actions
   static Future<NotificationDetails> _notificationDetails() async {
     const androidDetails = AndroidNotificationDetails(
       "reminder_channel_id",
@@ -55,22 +113,34 @@ class NotificationLogic {
       priority: Priority.max,
       playSound: true,
       enableVibration: true,
+      timeoutAfter: 60000, // Stay visible for 60 seconds
+      actions: [
+        AndroidNotificationAction(
+          'take_action',
+          '✅ Take',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'skip_action',
+          '❌ Skip',
+          showsUserInterface: true,
+        ),
+      ],
     );
 
     return const NotificationDetails(android: androidDetails);
   }
 
-  // Method to schedule alarms
+  // Schedule alarms
   static Future<void> scheduleAlarm({
-    required String reminderId,
     required int id,
     required String title,
     required String body,
     required DateTime dateTime,
+    required String uid,
+    required String medicationId,
   }) async {
-    if (dateTime.isBefore(DateTime.now())) {
-      dateTime = dateTime.add(const Duration(days: 1));
-    }
+    final payload = '$uid|$medicationId|${dateTime.toIso8601String()}';
 
     await _notifications.zonedSchedule(
       id,
@@ -78,18 +148,19 @@ class NotificationLogic {
       body,
       tz.TZDateTime.from(dateTime, tz.local),
       await _notificationDetails(),
+      payload: payload,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       androidAllowWhileIdle: true,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
-  // Method to cancel a scheduled alarm
+  // Cancel alarms
   static Future<void> cancelAlarm(int id) async {
     await _notifications.cancel(id);
   }
 
-  // Method to check if an alarm is scheduled
+  // Check if an alarm is scheduled
   static Future<bool> isAlarmScheduled(int id) async {
     final pendingNotifications = await _notifications.pendingNotificationRequests();
     return pendingNotifications.any((notification) => notification.id == id);

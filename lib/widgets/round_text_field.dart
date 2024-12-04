@@ -6,10 +6,11 @@ class RoundTextField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
   final String hintText;
-  final IconData icon;  
+  final IconData icon;
   final TextInputType textInputType;
   final bool isObscureText;
   final Widget? rightIcon;
+  final bool enabled; // Add this property
 
   const RoundTextField({
     super.key,
@@ -21,6 +22,7 @@ class RoundTextField extends StatelessWidget {
     required this.textInputType,
     this.isObscureText = false,
     this.rightIcon,
+    this.enabled = true, // Default to true
   });
 
   @override
@@ -35,6 +37,7 @@ class RoundTextField extends StatelessWidget {
         keyboardType: textInputType,
         obscureText: isObscureText,
         onChanged: onChanged,
+        enabled: enabled, // Add this line to enable/disable the text field
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           enabledBorder: InputBorder.none,
