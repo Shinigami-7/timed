@@ -26,7 +26,7 @@ class _ReportScreenState extends State<ReportScreen> {
       final snapshot = await FirebaseFirestore.instance
           .collection('user')
           .doc(user!.uid)
-          .collection('reports')
+          .collection('journal')
           .get();
 
       if (snapshot.docs.isEmpty) {
@@ -34,8 +34,8 @@ class _ReportScreenState extends State<ReportScreen> {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text('No Reports'),
-            content: const Text('No reports are available to calculate averages.'),
+            title: const Text('No journal'),
+            content: const Text('No journal are available to calculate averages.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -101,7 +101,7 @@ class _ReportScreenState extends State<ReportScreen> {
         centerTitle: true,
         elevation: 0,
         title: const Text(
-          "Health Reports",
+          "Journal",
           style: TextStyle(
             color: AppColors.blackColor,
             fontSize: 16,

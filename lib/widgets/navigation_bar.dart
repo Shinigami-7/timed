@@ -70,7 +70,7 @@ class _MainNavigationBarState extends State<MainNavigationBar> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.file_copy),
-            label: 'Reports',
+            label: 'Journal',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
