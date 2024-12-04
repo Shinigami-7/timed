@@ -89,138 +89,141 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Back icon
-          onPressed: () {
-            // Navigate back to the settings screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const SettingScreen()), // Settings screen
-            );
-          },
+    return WillPopScope(
+      onWillPop: () async => true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Change Password'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back), // Back icon
+            onPressed: () {
+              // Navigate back to the settings screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingScreen()), // Settings screen
+              );
+            },
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        "Current Password",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                      TextFormField(
-                        controller: _currentPasswordController,
-                        obscureText: _isObscure, // Hide or show text
-                        decoration: InputDecoration(
-                          labelText: 'Current Password',
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscure ? Icons.visibility : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isObscure = !_isObscure; // Toggle visibility
-                              });
-                            },
-                          ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          "Current Password",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your current password';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'New Password',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _newPasswordController,
-                        obscureText: _isObscure2, // Hide or show text
-                        decoration: InputDecoration(
-                          labelText: 'New Password',
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscure2 ? Icons.visibility : Icons.visibility_off,
+                        TextFormField(
+                          controller: _currentPasswordController,
+                          obscureText: _isObscure, // Hide or show text
+                          decoration: InputDecoration(
+                            labelText: 'Current Password',
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure; // Toggle visibility
+                                });
+                              },
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _isObscure2 = !_isObscure2; // Toggle visibility
-                              });
-                            },
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your current password';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a new password';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters long';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Confirm Password',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: _isObscure3, // Hide or show text
-                        decoration: InputDecoration(
-                          labelText: 'Confirm Password',
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscure3 ? Icons.visibility : Icons.visibility_off,
+                        const SizedBox(height: 20),
+                        const Text(
+                          'New Password',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _newPasswordController,
+                          obscureText: _isObscure2, // Hide or show text
+                          decoration: InputDecoration(
+                            labelText: 'New Password',
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure2 ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure2 = !_isObscure2; // Toggle visibility
+                                });
+                              },
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _isObscure3 = !_isObscure3; // Toggle visibility
-                              });
-                            },
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a new password';
+                            }
+                            if (value.length < 6) {
+                              return 'Password must be at least 6 characters long';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your new password';
-                          }
-                          if (value != _newPasswordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Confirm Password',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _isObscure3, // Hide or show text
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure3 ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure3 = !_isObscure3; // Toggle visibility
+                                });
+                              },
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your new password';
+                            }
+                            if (value != _newPasswordController.text) {
+                              return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20, // Adds some space before the button
-            ),
-            RoundGradientButton(
-              title: 'Change Password',
-              onPressed: _changePassword,
-            ),
-          ],
+              const SizedBox(
+                height: 20, // Adds some space before the button
+              ),
+              RoundGradientButton(
+                title: 'Change Password',
+                onPressed: _changePassword,
+              ),
+            ],
+          ),
         ),
       ),
     );

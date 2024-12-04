@@ -84,9 +84,10 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medicine Add Page 3 Custom'),
+        title: const Text('Medicine Add Page'),
       ),
       body: Column(
         children: [
@@ -98,8 +99,8 @@ class _AddMed3State_Custom extends State<AddMed3_1_Custom> {
                   Center(
                     child: Image.asset(
                       'assets/images/medicine.png',
-                      height: 250,
-                      width: 250,
+                      height: media.height*0.2,
+                      width: media.width*0.4,
                     ),
                   ),
                   const Text(
