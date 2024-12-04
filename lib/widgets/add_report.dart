@@ -37,7 +37,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       await FirebaseFirestore.instance
           .collection('user')
           .doc(user!.uid)
-          .collection('reports')
+          .collection('journal')
           .add({
         'timeStamp': timestamp,
         'bloodPressure': bloodPressure,
