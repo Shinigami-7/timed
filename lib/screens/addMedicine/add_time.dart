@@ -15,13 +15,13 @@ class AddMed3_1 extends StatefulWidget {
 
 class _AddMed3State extends State<AddMed3_1> {
   late List<TimeOfDay?> timeList;
-  late List<int> doseList;
+  late int dose;
 
   @override
   void initState() {
     super.initState();
     timeList = List<TimeOfDay?>.filled(widget.frequency, null);
-    doseList = List<int>.filled(widget.frequency, 0);
+    dose = 0; // Initial dose set to 0
   }
 
   void _showTimePicker(int index) {
@@ -48,9 +48,17 @@ class _AddMed3State extends State<AddMed3_1> {
 
     final uid = user.uid;
     try {
+      if (dose <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please enter a valid dose")),
+        );
+        return;
+      }
+
       final medicationData = {
         'medicineName': widget.medication,
         'frequency': widget.frequency,
+        'dose': dose, // Save the dose as a single field
         'createdAt': Timestamp.now(),
         'intakes': List.generate(widget.frequency, (index) => {
           'time': timeList[index] != null
@@ -62,7 +70,6 @@ class _AddMed3State extends State<AddMed3_1> {
                   timeList[index]!.minute,
                 ))
               : null,
-          'dose': doseList[index],
         }),
       };
 
@@ -74,6 +81,10 @@ class _AddMed3State extends State<AddMed3_1> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Medication saved successfully")),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => UploadPrescriptionScreen()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +98,7 @@ class _AddMed3State extends State<AddMed3_1> {
     var media = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medicine Add Page 3'),
+        title: const Text('Medicine Add Page'),
       ),
       body: Column(
         children: [
@@ -98,8 +109,8 @@ class _AddMed3State extends State<AddMed3_1> {
                   Center(
                     child: Image.asset(
                       'assets/images/medicine.png',
-                      height: media.height*0.03,
-                      width:  media.width*0.04,
+                      height: media.height * 0.2,
+                      width: media.width * 0.4,
                     ),
                   ),
                   const Text(
@@ -111,6 +122,31 @@ class _AddMed3State extends State<AddMed3_1> {
                   for (int i = 0; i < widget.frequency; i++)
                     _buildIntakeRow(i),
                   const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        const Text("Quantity"),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 50,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              hintText: "1",
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                dose = int.tryParse(value) ?? 0;
+                              });
+                            },
+                          ),
+                        ),
+                        const Text("pill(s)"),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -123,10 +159,6 @@ class _AddMed3State extends State<AddMed3_1> {
               child: ElevatedButton(
                 onPressed: () async {
                   await _saveMedication();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  UploadPrescriptionScreen()),
-                  );
                 },
                 child: const Text("Next"),
               ),
@@ -155,32 +187,6 @@ class _AddMed3State extends State<AddMed3_1> {
                 child: Text(
                   timeList[index] != null ? timeList[index]!.format(context) : 'Select Time',
                   style: const TextStyle(fontSize: 20),
-                ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(right: 25),
-                child: Row(
-                  children: [
-                    const Text("Quantity"),
-                    const SizedBox(width: 8),
-                    SizedBox(
-                      width: 50,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          hintText: "1",
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            doseList[index] = int.tryParse(value) ?? 0;
-                          });
-                        },
-                      ),
-                    ),
-                    const Text("pill(s)"),
-                  ],
                 ),
               ),
             ],

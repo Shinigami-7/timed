@@ -55,29 +55,26 @@ class _HomescreenState extends State<Homescreen> {
   }
 
   void scheduleNotificationsForIntakes(List<Map<String, dynamic>> intakes,
-      String medicineName, String medicationId) {
+      String medicineName, String medicationId, int dose) {
     for (var intake in intakes) {
       Timestamp timestamp = intake['time'];
       DateTime time = timestamp.toDate();
-      int dose = intake['dose'];
 
       NotificationLogic.scheduleAlarm(
         uid: user!.uid,
         id: time.hashCode,
         title: 'Medication Reminder',
-        body: 'Time to take $medicineName ($dose mg)',
+        body: 'Time to take $medicineName ($dose mg)', // Use dose from docData
         dateTime: time,
         medicationId: medicationId,
       );
     }
   }
 
-  Future<void> handleTakeButton(
-      String docId, Map<String, dynamic> intake) async {
+  Future<void> handleTakeButton(String docId, int dose) async {
     try {
-      final int currentDose = intake['dose'] ?? 0;
-      if (currentDose > 0) {
-        final updatedDose = currentDose - 1;
+      if (dose > 0) {
+        final updatedDose = dose - 1;
 
         await FirebaseFirestore.instance
             .collection("user")
@@ -85,25 +82,19 @@ class _HomescreenState extends State<Homescreen> {
             .collection("medications")
             .doc(docId)
             .update({
-          "intakes": FieldValue.arrayRemove([intake]),
-        });
-
-        final updatedIntake = {...intake, "dose": updatedDose};
-        await FirebaseFirestore.instance
-            .collection("user")
-            .doc(user!.uid)
-            .collection("medications")
-            .doc(docId)
-            .update({
-          "intakes": FieldValue.arrayUnion([updatedIntake]),
+          "dose": updatedDose, // Update dose directly in the document
         });
 
         setState(() {
-          cardColors[docId] = const Color.fromARGB(255, 202, 250, 147); // Change card color to light green
-          skipCounts[docId] = 0; // Reset skip count when take button is pressed
+          cardColors[docId] = const Color.fromARGB(255, 202, 250, 147);
+          skipCounts[docId] = 0; // Reset skip count
         });
 
         print("Dose reduced by 1");
+
+        if (updatedDose == 0) {
+          print("The dose for this medication has been fully consumed.");
+        }
       } else {
         print("Dose is already 0, cannot reduce further.");
       }
@@ -114,18 +105,18 @@ class _HomescreenState extends State<Homescreen> {
 
   void handleSkipButton(String docId) {
     setState(() {
-      cardColors[docId] = const Color.fromARGB(255, 246, 150, 143); // Change card color to red
+      cardColors[docId] =
+          const Color.fromARGB(255, 246, 150, 143); // Change card color to red
       skipCounts[docId] = (skipCounts[docId] ?? 0) + 1; // Increment skip count
     });
   }
 
-  Future<void> handleAddQuantityButton(
-      String docId, Map<String, dynamic> intake) async {
+  Future<void> handleAddQuantityButton(String docId, int dose) async {
     try {
       final quantity = int.tryParse(quantityController.text) ?? 0;
       if (quantity > 0) {
-        final currentDose = intake['dose'] ?? 0;
-        final updatedDose = currentDose + quantity;
+        // Update dose in the document directly
+        final updatedDose = dose + quantity;
 
         await FirebaseFirestore.instance
             .collection("user")
@@ -133,17 +124,7 @@ class _HomescreenState extends State<Homescreen> {
             .collection("medications")
             .doc(docId)
             .update({
-          "intakes": FieldValue.arrayRemove([intake]),
-        });
-
-        final updatedIntake = {...intake, "dose": updatedDose};
-        await FirebaseFirestore.instance
-            .collection("user")
-            .doc(user!.uid)
-            .collection("medications")
-            .doc(docId)
-            .update({
-          "intakes": FieldValue.arrayUnion([updatedIntake]),
+          "dose": updatedDose, // Update dose directly in the document
         });
 
         setState(() {
@@ -234,12 +215,13 @@ class _HomescreenState extends State<Homescreen> {
                       String medicineName =
                           docData['medicineName'] ?? 'No medicine name';
                       int frequency = docData['frequency'] ?? 0;
+                      int dose = docData['dose'] ?? 0;
                       List<Map<String, dynamic>> intakes =
                           List<Map<String, dynamic>>.from(
                               docData['intakes'] ?? []);
 
                       scheduleNotificationsForIntakes(
-                          intakes, medicineName, doc.id);
+                          intakes, medicineName, doc.id, dose);
 
                       return GestureDetector(
                         onTap: () {
@@ -287,171 +269,128 @@ class _HomescreenState extends State<Homescreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                Text(
+                                  medicineName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
                                   children: [
-                                    Text(
-                                      medicineName,
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        CircularProgressIndicator(
+                                          value: dose >= 20 ? 1.0 : dose / 20.0,
+                                          backgroundColor: Colors.grey[200],
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            dose >= 12
+                                                ? Colors.green
+                                                : dose <= 11 && dose >= 6
+                                                    ? Colors.orange
+                                                    : Colors.red,
+                                          ),
+                                        ),
+                                        Text("$dose"),
+                                      ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    ...intakes.map((intake) {
-                                      Timestamp timestamp = intake['time'];
-                                      DateTime time = timestamp.toDate();
-                                      int dose = intake['dose'];
-
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                    const SizedBox(width: 6),
+                                    Text("Frequency: $frequency / day"),
+                                    Spacer(),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        for (var intake in intakes)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom:
+                                                    8.0), // Add some spacing between each text
+                                            child: Text(
+                                              DateFormat.jm().format(
+                                                  (intake['time'] as Timestamp)
+                                                      .toDate()),
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                if (tappedContainerId == doc.id)
+                                  Row(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            handleTakeButton(doc.id, dose),
+                                        child: const Text("Take"),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      if (isAddButtonVisible)
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedDocId = doc.id;
+                                              isAddButtonVisible = false;
+                                            });
+                                          },
+                                          child: const Text("Add"),
+                                        ),
+                                      if (!isAddButtonVisible)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8),
+                                          child: Row(
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Stack(
-                                                    alignment: Alignment
-                                                        .center, // Center the text within the circle
-                                                    children: [
-                                                      CircularProgressIndicator(
-                                                        value: dose >= 20
-                                                            ? 1.0
-                                                            : dose / 20.0,
-                                                        backgroundColor:
-                                                            Colors.grey[200],
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          dose >= 12
-                                                              ? Colors.green
-                                                              : dose <= 11 &&
-                                                                      dose >= 6
-                                                                  ? Colors
-                                                                      .orange
-                                                                  : Colors.red,
-                                                        ),
-                                                        strokeWidth: 5,
-                                                      ),
-                                                      Text(
-                                                        '$dose', // Display the dose value
-                                                        style: const TextStyle(
-                                                          fontSize:
-                                                              14, // Adjust font size as needed
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors
-                                                              .black, // Text color
-                                                        ),
-                                                      ),
-                                                    ],
+                                              Container(
+                                                width: 100,
+                                                child: TextField(
+                                                  controller:
+                                                      quantityController,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    hintText: "Quantity",
                                                   ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  Text(
-                                                    'Frequency: $frequency times daily',
-                                                    style: const TextStyle(
-                                                        fontSize: 16),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
-                                              Text(
-                                                DateFormat.jm().format(time),
-                                                style: const TextStyle(
-                                                    fontSize: 16),
+                                              ElevatedButton(
+                                                onPressed: () =>
+                                                    handleAddQuantityButton(
+                                                        doc.id, dose),
+                                                child: const Text("Add"),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 8),
-                                          if (tappedContainerId == doc.id)
-                                            Row(
-                                              children: [
-                                                ElevatedButton(
-                                                  onPressed: () =>
-                                                      handleTakeButton(
-                                                          doc.id, intake),
-                                                  child: const Text("Take"),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                if (isAddButtonVisible)
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        selectedDocId = doc.id;
-                                                        isAddButtonVisible =
-                                                            false;
-                                                      });
-                                                    },
-                                                    child: const Text("Add"),
-                                                  ),
-                                                if (!isAddButtonVisible)
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8),
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          width: 100,
-                                                          child: TextField(
-                                                            controller:
-                                                                quantityController,
-                                                            keyboardType:
-                                                                TextInputType
-                                                                    .number,
-                                                            decoration:
-                                                                const InputDecoration(
-                                                              hintText:
-                                                                  "Quantity",
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        ElevatedButton(
-                                                          onPressed: () =>
-                                                              handleAddQuantityButton(
-                                                                  doc.id,
-                                                                  intake),
-                                                          child:
-                                                              const Text("Add"),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Spacer(),
-                                                // Skip Button to increment skip count and change card color
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Skip Count: ${skipCounts[doc.id] ?? 0}',
-                                                      style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-
-                                                    ElevatedButton(
-                                                      onPressed: () =>
-                                                          handleSkipButton(
-                                                              doc.id),
-                                                      child: const Text("Skip"),
-                                                    ),
-                                                    const SizedBox(height: 5),
-                                                    
-                                                  ],
-                                                ),
-                                              ],
+                                        ),
+                                      const Spacer(),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Skip Count: ${skipCounts[doc.id] ?? 0}',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                          const SizedBox(height: 8),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () =>
+                                                handleSkipButton(doc.id),
+                                            child: const Text("Skip"),
+                                          ),
+                                          const SizedBox(height: 5),
                                         ],
-                                      );
-                                    }).toList(),
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
                               ],
                             ),
                           ),

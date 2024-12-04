@@ -47,11 +47,8 @@ class _AddMedState extends State<AddMed> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: Row(
                       children: [
-                        const Text(
-                          "Unit",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        const Spacer(),
+                        
+                        
                         StreamBuilder<QuerySnapshot>(
                           stream: FirebaseFirestore.instance.collection("medicine").snapshots(), 
                           builder: (context,snapshot){
