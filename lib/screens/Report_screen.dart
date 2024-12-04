@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:timed/screens/report_generate.dart';
 import 'package:timed/utils/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:timed/widgets/round_gradient_button.dart';
@@ -158,15 +157,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: RoundGradientButton(
-                  title: 'Generate Report',
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ReportGenerate()));
-                  },
-                ),
-              ),
+              
             ],
           );
         },
