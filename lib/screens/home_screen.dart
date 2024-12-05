@@ -61,12 +61,12 @@ class _HomescreenState extends State<Homescreen> {
       DateTime time = timestamp.toDate();
 
       NotificationLogic.scheduleAlarm(
-        uid: user!.uid,
+        
         id: time.hashCode,
         title: 'Medication Reminder',
         body: 'Time to take $medicineName ($dose mg)', // Use dose from docData
         dateTime: time,
-        medicationId: medicationId,
+        
       );
     }
   }
